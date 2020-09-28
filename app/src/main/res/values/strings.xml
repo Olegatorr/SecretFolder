@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Secret Folder</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">Login</string>
+    <string name="second_fragment_label">View</string>
+    <string name="third_fragment_label">Setup</string>
+    <string name="login">Enter</string>
+    <string name="previous">Previous</string>
+
+    <string name="enter_pin">Enter pin</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="loginError">Wrong PIN</string>
+    <string name="set_up_a_pin_code">Set up a PIN code</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pin_set_up">PIN set up!</string>
+</resources>
