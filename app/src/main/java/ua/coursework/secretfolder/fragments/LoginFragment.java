@@ -1,5 +1,6 @@
 package ua.coursework.secretfolder.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,14 +16,20 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.FileWriter;
+
 import ua.coursework.secretfolder.MainActivity;
 import ua.coursework.secretfolder.R;
+import ua.coursework.secretfolder.utils.md5Calculator;
 import ua.coursework.secretfolder.utils.preferencesHandler;
 
 public class LoginFragment extends Fragment {
 
     ua.coursework.secretfolder.utils.preferencesHandler preferences =
             new ua.coursework.secretfolder.utils.preferencesHandler();
+
+    final private md5Calculator md5 = new md5Calculator();
 
     @Override
     public View onCreateView(
@@ -63,9 +70,13 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    if (passField.getText().toString().equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
-                        NavHostFragment.findNavController(LoginFragment.this)
-                                .navigate(R.id.action_FirstFragment_to_SecondFragment);
+
+                    String test = passField.getText().toString();
+
+                    if (md5.md5Apache((passField.getText().toString())).equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
+
+                        ((MainActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
+
                     } else {
                         errorText.setVisibility(View.VISIBLE);
                     }
@@ -75,8 +86,6 @@ public class LoginFragment extends Fragment {
                 }
             }
         });
-
-
 
     }
 }

@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -15,15 +19,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,19 +49,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import ua.coursework.secretfolder.fragments.LoginFragment;
 import ua.coursework.secretfolder.fragments.LoginNewFragment;
 import ua.coursework.secretfolder.utils.preferencesHandler;
+
+import com.squareup.picasso.*;
 
 public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton fabBtn;
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
 
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
     ua.coursework.secretfolder.utils.preferencesHandler preferences =
             new ua.coursework.secretfolder.utils.preferencesHandler();
+
+    File mApplicationDirectory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +92,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fabBtn = fab;
+        mApplicationDirectory = getAppContext().getExternalFilesDir(null);
+
 
         checkPermissions();
-        checkIfPINSaved();
-        clearBackStack();
+
+        if(isPINSaved()){
+            openFragment(R.id.nav_host_fragment, new LoginFragment());
+        }else{
+            openFragment(R.id.nav_host_fragment, new LoginNewFragment());
+        }
+
+
     }
 
     @Override
@@ -118,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
             final int result = ContextCompat.checkSelfPermission(this, permission);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 missingPermissions.add(permission);
+            }else{
+                Log.i("Already has", permission);
             }
         }
         if (!missingPermissions.isEmpty()) {
@@ -143,11 +170,26 @@ public class MainActivity extends AppCompatActivity {
                     filePathColumn, null, null, null);
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
             String picturePath = cursor.getString(columnIndex);
+            String filename = picturePath.substring(picturePath.lastIndexOf("/")+1);
+
             cursor.close();
             // String picturePath contains the path of selected Image
-            ImageView imageView = (ImageView) findViewById(R.id.imageView2);
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
+            //ImageView imageView = (ImageView) findViewById(R.id.imageView2);
+            //File f = new File(picturePath);
+            //Picasso.with(getAppContext()).load(f).into(imageView);
+
+            Bitmap bMap = BitmapFactory.decodeFile(picturePath);
+            String test = bMap.toString();
+            writeFileOnInternalStorage(filename, convert(bMap));
+
+            /*
+            Drawable d = new BitmapDrawable(getResources(), BitmapFactory.decodeFile(picturePath));
+            imageView.setBackground(d);
+            */
+
         }
     }
 
@@ -163,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
                                 + "' not granted, exiting", Toast.LENGTH_LONG).show();
                         finish();
                         return;
+                    }else{
+                        Log.i("Success", permissions[index]);
                     }
                 }
                 // all permissions were granted
@@ -176,18 +220,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clearBackStack() {
-        while (getSupportFragmentManager().getBackStackEntryCount() > 0){
-            getSupportFragmentManager().popBackStackImmediate();
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
         }
     }
 
-    public void checkIfPINSaved() {
-        if(preferencesHandler.getValue(getAppContext(), "PIN", null) == null){
-            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-            tx.replace(R.id.nav_host_fragment, new LoginNewFragment());
-            tx.addToBackStack(null);
-            tx.commit();
+    public boolean isPINSaved() {
+        return preferencesHandler.getValue(getAppContext(), "PIN", null) != null;
+    }
+
+    public void openFragment(int fragmentID, Fragment fragment){
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.replace(fragmentID, fragment);
+        tx.addToBackStack(null);
+        tx.commit();
+    }
+
+    public void writeFileOnInternalStorage(String sFileName, String sBody){
+        File dir = new File(mApplicationDirectory + "/data");
+        if(!dir.exists()){
+            //noinspection ResultOfMethodCallIgnored
+            dir.mkdir();
+        }
+
+        try {
+            File gpxfile = new File(dir, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
+
+    public static Bitmap convert(String base64Str) throws IllegalArgumentException
+    {
+        byte[] decodedBytes = Base64.decode(
+                base64Str.substring(base64Str.indexOf(",")  + 1),
+                Base64.DEFAULT
+        );
+
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
+
+    public static String convert(Bitmap bitmap)
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+
+        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+    }
+
 }
 

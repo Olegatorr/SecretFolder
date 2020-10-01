@@ -28,8 +28,6 @@ public class ViewFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_view, container, false);
 
-        ((MainActivity)getActivity()).clearBackStack();
-
         // Inflate the layout for this fragment
         return view;
     }
@@ -38,6 +36,8 @@ public class ViewFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ((MainActivity)getActivity()).showFab();
+        //((MainActivity)getActivity()).clearBackStack(); TODO
+
         hideKeyboardFrom(getContext(), view);
     }
 

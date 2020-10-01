@@ -19,12 +19,14 @@ import com.google.android.material.snackbar.Snackbar;
 
 import ua.coursework.secretfolder.MainActivity;
 import ua.coursework.secretfolder.R;
+import ua.coursework.secretfolder.utils.md5Calculator;
 import ua.coursework.secretfolder.utils.preferencesHandler;
 
 public class LoginNewFragment extends Fragment {
 
     private boolean isFirstPINEntered = false;
     private String firstPIN = "";
+    final private md5Calculator md5 = new md5Calculator();
 
     @Override
     public View onCreateView(
@@ -32,7 +34,6 @@ public class LoginNewFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         // Inflate the layout for this fragment
-        ((MainActivity)getActivity()).clearBackStack();
         return inflater.inflate(R.layout.fragment_login_new, container, false);
     }
 
@@ -80,17 +81,16 @@ public class LoginNewFragment extends Fragment {
                         Snackbar.make(view, R.string.pin_set_up, Snackbar.LENGTH_SHORT)
                                 .setAction(R.string.pin_set_up, null).show();
 
-                        preferencesHandler.setValue(getContext(), "PIN", passField.getText().toString());
+                        preferencesHandler.setValue(getContext(), "PIN", md5.md5Apache(passField.getText().toString()));
 
-                        NavHostFragment.findNavController(LoginNewFragment.this)
-                                .navigate(R.id.action_Setup_to_FirstFragment);
+                        ((MainActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
+                        //((MainActivity)getActivity()).clearBackStack();
+
                     }else{
                         errorText.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
-
     }
-
 }
