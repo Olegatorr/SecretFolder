@@ -3,72 +3,53 @@ package ua.coursework.secretfolder;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
-
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import android.app.Activity;
-import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import pub.devrel.easypermissions.EasyPermissions;
 import ua.coursework.secretfolder.fragments.LoginFragment;
 import ua.coursework.secretfolder.fragments.LoginNewFragment;
 import ua.coursework.secretfolder.utils.preferencesHandler;
-
-import com.squareup.picasso.*;
 
 public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton fabBtn;
 
-    private final static int REQUEST_CODE_ASK_PERMISSIONS = 2;
-
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
-    ua.coursework.secretfolder.utils.preferencesHandler preferences =
-            new ua.coursework.secretfolder.utils.preferencesHandler();
-
     File mApplicationDirectory;
+    File mApplicationDirectoryData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,17 +74,40 @@ public class MainActivity extends AppCompatActivity {
 
         fabBtn = fab;
         mApplicationDirectory = getAppContext().getExternalFilesDir(null);
-
-
-        checkPermissions();
+        mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
 
         if(isPINSaved()){
             openFragment(R.id.nav_host_fragment, new LoginFragment());
         }else{
             openFragment(R.id.nav_host_fragment, new LoginNewFragment());
         }
+    }
+
+    private void loadImages(){
+        Collection<String> images = getImages();
+    }
+
+    private Collection<String> getImages(){
 
 
+        File[] files = mApplicationDirectoryData.listFiles();
+        List<String> images = new ArrayList<String>();
+
+        assert files != null;
+        for (File file : files) {
+
+            String fileAsString = null;
+            try {
+                fileAsString = readFile(file.getAbsolutePath(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //Bitmap bitmap = convert(fileAsString);
+            images.add(fileAsString);
+            Log.i("File: ", file.getAbsolutePath());
+        }
+
+        return images;
     }
 
     @Override
@@ -136,34 +140,23 @@ public class MainActivity extends AppCompatActivity {
         fabBtn.show();
     }
 
-    protected void checkPermissions() {
-        final List<String> missingPermissions = new ArrayList<String>();
-        // check all required dynamic permissions
-        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
-            final int result = ContextCompat.checkSelfPermission(this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
-            }else{
-                Log.i("Already has", permission);
-            }
-        }
-        if (!missingPermissions.isEmpty()) {
-            // request all missing permissions
-            final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+    public void checkPermissions() {
+
+        if (EasyPermissions.hasPermissions(this, REQUIRED_SDK_PERMISSIONS)) {
+
         } else {
-            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
-            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                    grantResults);
+            EasyPermissions.requestPermissions(this, "Access for storage",
+                    101, REQUIRED_SDK_PERMISSIONS);
         }
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 69 && resultCode == RESULT_OK && null != data) {
+
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage,
@@ -175,43 +168,15 @@ public class MainActivity extends AppCompatActivity {
             String filename = picturePath.substring(picturePath.lastIndexOf("/")+1);
 
             cursor.close();
-            // String picturePath contains the path of selected Image
 
-            //ImageView imageView = (ImageView) findViewById(R.id.imageView2);
-            //File f = new File(picturePath);
-            //Picasso.with(getAppContext()).load(f).into(imageView);
+            Bitmap bMap = null;
+            try {
+                bMap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
-            Bitmap bMap = BitmapFactory.decodeFile(picturePath);
-            String test = bMap.toString();
             writeFileOnInternalStorage(filename, convert(bMap));
-
-            /*
-            Drawable d = new BitmapDrawable(getResources(), BitmapFactory.decodeFile(picturePath));
-            imageView.setBackground(d);
-            */
-
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                for (int index = permissions.length - 1; index >= 0; --index) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // exit the app if one permission is not granted
-                        Toast.makeText(this, "Required permission '" + permissions[index]
-                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
-                        finish();
-                        return;
-                    }else{
-                        Log.i("Success", permissions[index]);
-                    }
-                }
-                // all permissions were granted
-                //initialize();
-                break;
         }
     }
 
@@ -236,6 +201,9 @@ public class MainActivity extends AppCompatActivity {
         tx.addToBackStack(null);
         tx.commit();
     }
+
+    //Toast.makeText(this, "Required permission '" + permissions[index]
+    //                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
 
     public void writeFileOnInternalStorage(String sFileName, String sBody){
         File dir = new File(mApplicationDirectory + "/data");
@@ -271,6 +239,12 @@ public class MainActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+    }
+
+    static String readFile(String path, Charset encoding) throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 
 }
