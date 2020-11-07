@@ -62,10 +62,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         notifyDataSetChanged();
     }
 
-    private Context getContext(){
-        return getContext();
-    }
-
     public Bitmap StringToBitMap(String encodedString){
         try{
             byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);

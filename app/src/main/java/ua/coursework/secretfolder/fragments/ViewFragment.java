@@ -48,7 +48,6 @@ public class ViewFragment extends Fragment {
         mApplicationDirectory = getContext().getExternalFilesDir(null);
         mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
 
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -65,13 +64,16 @@ public class ViewFragment extends Fragment {
 
         loadImages();
 
-
         ((MainActivity)getActivity()).checkPermissions();
 
         ((MainActivity)getActivity()).showFab();
-        //((MainActivity)getActivity()).clearBackStack(); TODO
 
         hideKeyboardFrom(getContext(), view);
+    }
+
+    public void onResume(){
+        super.onResume();
+        loadImages();
     }
 
     public static void hideKeyboardFrom(Context context, View view) {
@@ -81,27 +83,33 @@ public class ViewFragment extends Fragment {
 
     private void loadImages(){
         Collection<String> images = getImages();
-        adapter.setItems(images);
+        adapter.clearItems();
+
+        if(images != null){
+            adapter.setItems(images);
+        }
     }
 
     private Collection<String> getImages(){
 
-
         File[] files = mApplicationDirectoryData.listFiles();
         List<String> images = new ArrayList<String>();
 
-        assert files != null;
-        for (File file : files) {
+        try {
+            for (File file : files) {
 
-            String fileAsString = null;
-            try {
-                fileAsString = readFile(file.getAbsolutePath(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                e.printStackTrace();
+                String fileAsString = null;
+                try {
+                    fileAsString = readFile(file.getAbsolutePath(), StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //Bitmap bitmap = convert(fileAsString);
+                images.add(fileAsString);
+                Log.i("File: ", file.getAbsolutePath());
             }
-            //Bitmap bitmap = convert(fileAsString);
-            images.add(fileAsString);
-            Log.i("File: ", file.getAbsolutePath());
+        }catch (NullPointerException e){
+            return null;
         }
 
         return images;

@@ -83,33 +83,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadImages(){
-        Collection<String> images = getImages();
-    }
-
-    private Collection<String> getImages(){
-
-
-        File[] files = mApplicationDirectoryData.listFiles();
-        List<String> images = new ArrayList<String>();
-
-        assert files != null;
-        for (File file : files) {
-
-            String fileAsString = null;
-            try {
-                fileAsString = readFile(file.getAbsolutePath(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //Bitmap bitmap = convert(fileAsString);
-            images.add(fileAsString);
-            Log.i("File: ", file.getAbsolutePath());
-        }
-
-        return images;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -184,13 +157,6 @@ public class MainActivity extends AppCompatActivity {
         return getApplicationContext();
     }
 
-    public void clearBackStack() {
-        FragmentManager fm = getSupportFragmentManager();
-        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-            fm.popBackStack();
-        }
-    }
-
     public boolean isPINSaved() {
         return preferencesHandler.getValue(getAppContext(), "PIN", null) != null;
     }
@@ -206,15 +172,15 @@ public class MainActivity extends AppCompatActivity {
     //                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
 
     public void writeFileOnInternalStorage(String sFileName, String sBody){
-        File dir = new File(mApplicationDirectory + "/data");
+        File dir = mApplicationDirectoryData;
         if(!dir.exists()){
             //noinspection ResultOfMethodCallIgnored
             dir.mkdir();
         }
 
         try {
-            File gpxfile = new File(dir, sFileName);
-            FileWriter writer = new FileWriter(gpxfile);
+            File gpxFile = new File(dir, sFileName);
+            FileWriter writer = new FileWriter(gpxFile);
             writer.append(sBody);
             writer.flush();
             writer.close();
@@ -245,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
     {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
+    }
+
+    public void clearBackStackExclusive(){
+        getSupportFragmentManager().popBackStack("content_main", getSupportFragmentManager().POP_BACK_STACK_INCLUSIVE);
     }
 
 }
