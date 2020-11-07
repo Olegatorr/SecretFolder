@@ -1,6 +1,5 @@
-package ua.coursework.secretfolder;
+package ua.coursework.secretfolder.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -14,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import ua.coursework.secretfolder.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 

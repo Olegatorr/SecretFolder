@@ -11,13 +11,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import ua.coursework.secretfolder.MainActivity;
+import ua.coursework.secretfolder.LoginActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.md5Calculator;
 import ua.coursework.secretfolder.utils.preferencesHandler;
@@ -47,8 +45,6 @@ public class LoginNewFragment extends Fragment {
 
         ua.coursework.secretfolder.utils.preferencesHandler preferences =
                 new ua.coursework.secretfolder.utils.preferencesHandler();
-
-        ((MainActivity)getActivity()).hideFab();
 
         passField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -83,7 +79,7 @@ public class LoginNewFragment extends Fragment {
 
                         preferencesHandler.setValue(getContext(), "PIN", md5.md5Apache(passField.getText().toString()));
 
-                        ((MainActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
+                        ((LoginActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
                         //((MainActivity)getActivity()).clearBackStack();
 
                     }else{

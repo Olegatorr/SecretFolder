@@ -1,6 +1,7 @@
 package ua.coursework.secretfolder.fragments;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -12,14 +13,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.File;
-import java.io.FileWriter;
-
-import ua.coursework.secretfolder.MainActivity;
+import ua.coursework.secretfolder.GalleryActivity;
+import ua.coursework.secretfolder.LoginActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.md5Calculator;
 import ua.coursework.secretfolder.utils.preferencesHandler;
@@ -47,8 +45,6 @@ public class LoginFragment extends Fragment {
         final Button bLogin = (Button)view.findViewById(R.id.button_first);
         final FloatingActionButton bAdd = (FloatingActionButton)view.findViewById(R.id.fabAdd);
 
-        ((MainActivity)getActivity()).hideFab();
-
         passField.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
@@ -75,7 +71,10 @@ public class LoginFragment extends Fragment {
 
                     if (md5.md5Apache((passField.getText().toString())).equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
 
-                        ((MainActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
+                        // TODO mark
+                        Intent intent = new Intent(getContext(), GalleryActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
 
                     } else {
                         errorText.setVisibility(View.VISIBLE);
