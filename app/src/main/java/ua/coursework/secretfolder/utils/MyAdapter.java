@@ -18,7 +18,7 @@ import ua.coursework.secretfolder.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
-    private List<String> imgList = new ArrayList<>();
+    private List<Bitmap> imgList = new ArrayList<>();
 
     class ImgViewHolder extends RecyclerView.ViewHolder{
 
@@ -45,7 +45,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
     @Override
     public void onBindViewHolder(ImgViewHolder holder, int position) {
-        holder.bind(StringToBitMap(imgList.get(position)));
+        //holder.bind(StringToBitMap(imgList.get(position)));
+        holder.bind(imgList.get(position));
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         return imgList.size();
     }
 
-    public void setItems(Collection<String> tweets) {
+    public void setItems(Collection<Bitmap> tweets) {
         imgList.addAll(tweets);
         notifyDataSetChanged();
     }

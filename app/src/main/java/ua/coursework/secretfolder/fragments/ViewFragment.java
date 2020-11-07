@@ -33,12 +33,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import ua.coursework.secretfolder.utils.MyAdapter;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.permissionsHandler;
+import ua.coursework.secretfolder.utils.CryptoHandler;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -49,6 +51,7 @@ public class ViewFragment extends Fragment {
     File mApplicationDirectoryData;
     RecyclerView recyclerView;
     MyAdapter adapter;
+    CryptoHandler cryptoHandler;
 
     FloatingActionButton fabBtn;
 
@@ -74,6 +77,7 @@ public class ViewFragment extends Fragment {
         fabBtn = fab;
         mApplicationDirectory = getContext().getExternalFilesDir(null);
         mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
+        cryptoHandler = new CryptoHandler();
 
         return view;
     }
@@ -130,22 +134,31 @@ public class ViewFragment extends Fragment {
         loadImages();
     }
 
-    public static Bitmap convert(String base64Str) throws IllegalArgumentException
+    public Bitmap convert(String base64Str) throws IllegalArgumentException
     {
-        byte[] decodedBytes = Base64.decode(
-                base64Str.substring(base64Str.indexOf(",")  + 1),
-                Base64.DEFAULT
-        );
+        byte[] test = Base64.decode(base64Str, Base64.DEFAULT);
 
-        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+        String decodedBytes = (cryptoHandler.decrypt(getContext(), test));
+        //byte[] base64Bytes = Base64.decode(decodedBytes.substring(decodedBytes.indexOf(",")  + 1), Base64.DEFAULT);
+        byte[] base64Bytes = Base64.decode(decodedBytes, Base64.DEFAULT);
+        Bitmap decoded = BitmapFactory.decodeByteArray(base64Bytes, 0, base64Bytes.length);
+        return decoded;
     }
 
-    public static String convert(Bitmap bitmap)
+    public String convert(Bitmap bitmap)
     {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        String base64 = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
 
-        return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+        // HERE
+        // String test = new String(cryptoHandler.encrypt(getContext(), base64));
+        // HERE
+
+        byte[] encrypted = cryptoHandler.encrypt(getContext(), base64);
+        String encryptedString = Base64.encodeToString(encrypted, Base64.DEFAULT);
+
+        return encryptedString;
     }
 
     public void writeFileOnInternalStorage(String sFileName, String sBody){
@@ -172,7 +185,7 @@ public class ViewFragment extends Fragment {
     }
 
     private void loadImages(){
-        Collection<String> images = getImages();
+        Collection<Bitmap> images = getImages();
         adapter.clearItems();
 
         if(images != null){
@@ -180,10 +193,10 @@ public class ViewFragment extends Fragment {
         }
     }
 
-    private Collection<String> getImages(){
+    private Collection<Bitmap> getImages(){
 
         File[] files = mApplicationDirectoryData.listFiles();
-        List<String> images = new ArrayList<String>();
+        List<Bitmap> images = new ArrayList<Bitmap>();
 
         try {
             for (File file : files) {
@@ -194,8 +207,8 @@ public class ViewFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                //Bitmap bitmap = convert(fileAsString);
-                images.add(fileAsString);
+                Bitmap bitmap = convert(fileAsString);
+                images.add(bitmap);
                 Log.i("File: ", file.getAbsolutePath());
             }
         }catch (NullPointerException e){

@@ -66,9 +66,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-
-                    String test = passField.getText().toString();
-
                     if (md5.md5Apache((passField.getText().toString())).equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
 
                         // TODO mark
