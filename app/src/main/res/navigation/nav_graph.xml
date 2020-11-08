@@ -31,9 +31,4 @@
             android:id="@+id/action_Setup_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/fullscreenFragment"
-        android:name="ua.coursework.secretfolder.fragments.FullscreenFragment"
-        android:label="fragment_fullscreen"
-        tools:layout="@layout/fragment_fullscreen" />
 </navigation>

@@ -1,13 +1,17 @@
 package ua.coursework.secretfolder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import ua.coursework.secretfolder.fragments.ViewFragment;
 
@@ -18,13 +22,9 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //openFragment(R.id.nav_host_fragment, new ViewFragment());
         openFragment(R.id.nav_host_fragment, new ViewFragment());
 
         clearBackStackExclusive();
-
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
     }
 
@@ -56,7 +56,4 @@ public class GalleryActivity extends AppCompatActivity {
         getSupportFragmentManager().popBackStack("content_main", getSupportFragmentManager().POP_BACK_STACK_INCLUSIVE);
     }
 
-    public Context getAppContext() {
-        return getApplicationContext();
-    }
 }

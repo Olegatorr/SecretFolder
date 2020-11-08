@@ -53,6 +53,7 @@ public class ViewFragment extends Fragment {
     RecyclerView recyclerView;
     MyAdapter adapter;
     CryptoHandler cryptoHandler;
+    public AppCompatActivity activity;
 
     FloatingActionButton fabBtn;
 
@@ -76,7 +77,7 @@ public class ViewFragment extends Fragment {
         });
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
 
         fabBtn = fab;
@@ -94,7 +95,7 @@ public class ViewFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(),4);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new MyAdapter();
+        adapter = new MyAdapter(activity, getContext());
         recyclerView.setAdapter(adapter);
 
         permissionsHandler.checkPermissions(getActivity(), getContext());

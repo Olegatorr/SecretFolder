@@ -65,8 +65,6 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 try {
                     if (md5.md5Apache((passField.getText().toString())).equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
-
-                        // TODO mark
                         Intent intent = new Intent(getContext(), GalleryActivity.class);
                         startActivity(intent);
                         getActivity().finish();
