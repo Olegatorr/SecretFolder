@@ -1,6 +1,5 @@
 package ua.coursework.secretfolder.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import ua.coursework.secretfolder.GalleryActivity;
-import ua.coursework.secretfolder.LoginActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.md5Calculator;
 import ua.coursework.secretfolder.utils.preferencesHandler;

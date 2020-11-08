@@ -1,10 +1,10 @@
 package ua.coursework.secretfolder.utils;
+
 import android.content.Context;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;

@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,14 +35,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import ua.coursework.secretfolder.utils.MyAdapter;
 import ua.coursework.secretfolder.R;
-import ua.coursework.secretfolder.utils.permissionsHandler;
 import ua.coursework.secretfolder.utils.CryptoHandler;
+import ua.coursework.secretfolder.utils.MyAdapter;
+import ua.coursework.secretfolder.utils.permissionsHandler;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -73,6 +74,10 @@ public class ViewFragment extends Fragment {
 
             }
         });
+
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
 
         fabBtn = fab;
         mApplicationDirectory = getContext().getExternalFilesDir(null);
