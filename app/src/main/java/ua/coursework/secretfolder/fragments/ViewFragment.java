@@ -1,7 +1,9 @@
 package ua.coursework.secretfolder.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,7 +39,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.CryptoHandler;
@@ -54,6 +60,9 @@ public class ViewFragment extends Fragment {
     MyAdapter adapter;
     CryptoHandler cryptoHandler;
     public AppCompatActivity activity;
+
+    String picturePath = null;
+    String filename = null;
 
     FloatingActionButton fabBtn;
 
@@ -112,17 +121,23 @@ public class ViewFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 69 && resultCode == RESULT_OK && null != data) {
 
-            Uri selectedImage = data.getData();
+            final Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getActivity().getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 
-            String picturePath = cursor.getString(columnIndex);
-            String filename = picturePath.substring(picturePath.lastIndexOf("/")+1);
+            picturePath = cursor.getString(columnIndex);
+            filename = picturePath.substring(picturePath.lastIndexOf("/") + 1);
 
             cursor.close();
+
+            File fDelete = new File(picturePath);
+            boolean ifExists = fDelete.exists();
+            boolean canRead = fDelete.canRead();
+            boolean canWrite = fDelete.canWrite();
+            boolean canExecute = fDelete.canExecute();
 
             Bitmap bMap = null;
             try {
@@ -132,6 +147,42 @@ public class ViewFragment extends Fragment {
             }
 
             writeFileOnInternalStorage(filename, convert(bMap));
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage(R.string.delete_confirm)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                            File fDelete = new File(picturePath);
+                            if (fDelete.exists()) {
+                                if (fDelete.delete()) { // TODO: investigate
+                                    Snackbar.make(
+                                            getView(),
+                                            R.string.original_image_is_deleted,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                } else {
+                                    Snackbar.make(
+                                            getView(),
+                                            R.string.error_original_img_not_deleted,
+                                            Snackbar.LENGTH_SHORT
+                                    ).show();
+                                }
+                            }
+                        }
+                    })
+                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Snackbar.make(
+                                    getView(),
+                                    R.string.original_image_is_kept,
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
@@ -191,7 +242,7 @@ public class ViewFragment extends Fragment {
     }
 
     private void loadImages(){
-        Collection<Bitmap> images = getImages();
+        Map<Bitmap, String> images = getImages();
         adapter.clearItems();
 
         if(images != null){
@@ -199,22 +250,25 @@ public class ViewFragment extends Fragment {
         }
     }
 
-    private Collection<Bitmap> getImages(){
+    private Map<Bitmap, String> getImages(){
 
         File[] files = mApplicationDirectoryData.listFiles();
-        List<Bitmap> images = new ArrayList<Bitmap>();
+        Map<Bitmap, String> images = new LinkedHashMap<Bitmap, String>();
+        String temp = null;
 
         try {
             for (File file : files) {
 
                 String fileAsString = null;
                 try {
+                    temp = "";
                     fileAsString = readFile(file.getAbsolutePath(), StandardCharsets.UTF_8);
+                    temp = file.getAbsolutePath();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 Bitmap bitmap = convert(fileAsString);
-                images.add(bitmap);
+                images.put(bitmap, temp);
                 Log.i("File: ", file.getAbsolutePath());
             }
         }catch (NullPointerException e){

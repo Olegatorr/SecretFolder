@@ -4,22 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import ua.coursework.secretfolder.FullscreenActivity;
 import ua.coursework.secretfolder.R;
@@ -29,8 +27,10 @@ import static androidx.core.content.ContextCompat.startActivity;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
     private List<Bitmap> imgList = new ArrayList<>();
+    private Map<Bitmap, String> mapList = new LinkedHashMap<Bitmap, String>();
     AppCompatActivity activity;
     Context context;
+
 
     public MyAdapter(AppCompatActivity activity, Context context) {
         this.activity = activity;
@@ -56,7 +56,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
                         // TODO : send bm
                         Intent intent = new Intent(context, FullscreenActivity.class);
-                        intent.putExtra("Image", bitmap);
+                        intent.putExtra("ImageURI", mapList.get(bitmap));
                         startActivity(context, intent, null);
                     }
                 });
@@ -73,7 +73,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
     @Override
     public void onBindViewHolder(ImgViewHolder holder, int position) {
-        //holder.bind(StringToBitMap(imgList.get(position)));
         holder.bind(imgList.get(position));
     }
 
@@ -82,12 +81,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         return imgList.size();
     }
 
-    public void setItems(Collection<Bitmap> tweets) {
-        imgList.addAll(tweets);
+    public void setItems(Map<Bitmap, String> images) {
+        mapList = images;
+        imgList.addAll(images.keySet());
         notifyDataSetChanged();
     }
 
     public void clearItems() {
+        mapList.clear();
         imgList.clear();
         notifyDataSetChanged();
     }

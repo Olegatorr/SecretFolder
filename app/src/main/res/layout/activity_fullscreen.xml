@@ -31,19 +31,8 @@
         </LinearLayout>
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/image_fullscreen"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-
     <ImageView
-        android:id="@+id/fullscreen_image"
+        android:id="@+id/fullscreen_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
