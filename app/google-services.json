@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "818905789610",
+    "firebase_url": "https://secretfolder-dc714.firebaseio.com",
+    "project_id": "secretfolder-dc714",
+    "storage_bucket": "secretfolder-dc714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818905789610:android:055b994aca821494fb4cd3",
+        "android_client_info": {
+          "package_name": "ua.coursework.secretfolder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818905789610-gngk8id2cnoa1l8dae0fpb6l8vgg97ob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.coursework.secretfolder",
+            "certificate_hash": "6a566d90683651335e146a9658b338fd16507443"
+          }
+        },
+        {
+          "client_id": "818905789610-gmos25hqtofjb1prac3u97vhucl36g39.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8jpei5aY9UxtVEAx2JBex8ujsIm-uhb4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "818905789610-gmos25hqtofjb1prac3u97vhucl36g39.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
