@@ -17,4 +17,9 @@
         android:orderInCategory="100"
         android:title="@string/download"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_refresh"
+        android:orderInCategory="100"
+        android:title="@string/refresh"
+        app:showAsAction="never"/>
 </menu>

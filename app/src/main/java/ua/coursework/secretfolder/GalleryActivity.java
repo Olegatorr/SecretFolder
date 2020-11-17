@@ -7,6 +7,7 @@ import android.os.FileUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,8 +53,8 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         openFragment(R.id.nav_host_fragment, new ViewFragment());
 
         clearBackStackExclusive();
@@ -97,7 +100,6 @@ public class GalleryActivity extends AppCompatActivity {
                     new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
                     new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
 
-// Create and launch sign-in intent
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -109,11 +111,56 @@ public class GalleryActivity extends AppCompatActivity {
 
         }else if(id == R.id.action_download){
 
-            //StorageReference listRef = storage.getReference().child("files/uid");
+            mStorageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference gsReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://secretfolder-dc714.appspot.com/");
+            Task listAllTask = gsReference.listAll();
 
-            for(File file : files){
 
-            }
+            listAllTask
+                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                        @Override
+                        public void onSuccess(ListResult listResult) {
+                            Log.i("Firebase Download List Success", listResult.toString());
+                            for (StorageReference prefix : listResult.getItems()) {
+                                try {
+
+                                    String fileName = prefix.getName();
+                                    String filePrefix = fileName.substring(0, fileName.lastIndexOf("."));
+                                    String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+
+                                    if(!new File(mApplicationDirectoryData + "/" + fileName).exists()){
+
+                                        //File localFile = File.createTempFile(filePrefix, fileSuffix, mApplicationDirectoryData);
+                                        File localFile = new File(mApplicationDirectoryData + "/" + fileName);
+                                        if(!localFile.createNewFile()){
+                                            break;
+                                        }
+                                        prefix.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                Log.i("Firebase File Download", "SUCCESS");
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.e("Firebase File Download", "FAILURE: \n\n" + e.toString());
+                                            }
+                                        });
+                                    }else{
+                                        Log.i("Firebase Download", "FILE EXISTS");
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("Firebase Download List failure", e.toString());
+                        }
+                    });
 
         }else if(id == R.id.action_upload){
 
@@ -143,6 +190,10 @@ public class GalleryActivity extends AppCompatActivity {
 
                 });
             }
+        }else if(id == R.id.action_refresh){
+            Intent intent = new Intent(getApplicationContext(), GalleryActivity.class);
+            startActivity(intent);
+            activity.finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -167,13 +218,9 @@ public class GalleryActivity extends AppCompatActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
                 user = FirebaseAuth.getInstance().getCurrentUser();
                 Log.i("Firebase", "Login Successful");
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
                 Log.e("Firebase", "Login Failed: " + response.getErrorCode());
             }
         }
