@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 import ua.coursework.secretfolder.LoginActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.md5Calculator;
-import ua.coursework.secretfolder.utils.preferencesHandler;
+import ua.coursework.secretfolder.utils.PreferencesHandler;
 
 public class LoginNewFragment extends Fragment {
 
@@ -43,8 +43,8 @@ public class LoginNewFragment extends Fragment {
         final FloatingActionButton bAdd = (FloatingActionButton)view.findViewById(R.id.fabAdd);
         final TextView textViewSetUp = (TextView)view.findViewById(R.id.textViewSetUp);
 
-        ua.coursework.secretfolder.utils.preferencesHandler preferences =
-                new ua.coursework.secretfolder.utils.preferencesHandler();
+        PreferencesHandler preferences =
+                new PreferencesHandler();
 
         passField.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -77,7 +77,7 @@ public class LoginNewFragment extends Fragment {
                         Snackbar.make(view, R.string.pin_set_up, Snackbar.LENGTH_SHORT)
                                 .setAction(R.string.pin_set_up, null).show();
 
-                        preferencesHandler.setValue(getContext(), "PIN", md5.md5Apache(passField.getText().toString()));
+                        PreferencesHandler.setValue(getContext(), "PIN", md5.md5Apache(passField.getText().toString()));
 
                         ((LoginActivity)getActivity()).openFragment(R.id.nav_host_fragment, new ViewFragment());
                         //((MainActivity)getActivity()).clearBackStack();

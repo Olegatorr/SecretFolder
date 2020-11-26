@@ -18,12 +18,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import ua.coursework.secretfolder.GalleryActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.md5Calculator;
-import ua.coursework.secretfolder.utils.preferencesHandler;
+import ua.coursework.secretfolder.utils.PreferencesHandler;
 
 public class LoginFragment extends Fragment {
 
-    ua.coursework.secretfolder.utils.preferencesHandler preferences =
-            new ua.coursework.secretfolder.utils.preferencesHandler();
+    PreferencesHandler preferences =
+            new PreferencesHandler();
 
     final private md5Calculator md5 = new md5Calculator();
 
@@ -64,7 +64,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    if (md5.md5Apache((passField.getText().toString())).equals(preferencesHandler.getValue(getContext(), "PIN", null))) {
+                    if (md5.md5Apache((passField.getText().toString())).equals(PreferencesHandler.getValue(getContext(), "PIN", null))) {
                         Intent intent = new Intent(getContext(), GalleryActivity.class);
                         startActivity(intent);
                         getActivity().finish();

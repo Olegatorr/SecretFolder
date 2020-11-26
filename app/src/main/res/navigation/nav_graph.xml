@@ -19,8 +19,7 @@
         android:id="@+id/SecondFragment"
         android:name="ua.coursework.secretfolder.fragments.ViewFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_view">
-    </fragment>
+        tools:layout="@layout/fragment_view"></fragment>
     <fragment
         android:id="@+id/FirstFragmentNew"
         android:name="ua.coursework.secretfolder.fragments.LoginNewFragment"
@@ -29,6 +28,26 @@
 
         <action
             android:id="@+id/action_Setup_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="ua.coursework.secretfolder.fragments.FirstFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_first">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="ua.coursework.secretfolder.fragments.SecondFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>

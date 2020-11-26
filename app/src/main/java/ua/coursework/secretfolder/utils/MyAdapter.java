@@ -1,6 +1,7 @@
 package ua.coursework.secretfolder.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.snatik.storage.Storage;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +35,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
     private Map<Bitmap, String> mapList = new LinkedHashMap<Bitmap, String>();
     AppCompatActivity activity;
     Context context;
+    Storage storage;
+    private StorageReference mStorageRef;
 
 
     public MyAdapter(AppCompatActivity activity, Context context) {
         this.activity = activity;
         this.context = context;
+        storage = new Storage(context);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     class ImgViewHolder extends RecyclerView.ViewHolder{
@@ -58,6 +67,55 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
                         Intent intent = new Intent(context, FullscreenActivity.class);
                         intent.putExtra("ImageURI", mapList.get(bitmap));
                         startActivity(context, intent, null);
+                    }
+                });
+
+                userImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage(R.string.where_delete)
+                                .setCancelable(false)
+                                .setNegativeButton(R.string.local, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        storage.deleteFile(mapList.get(bitmap));
+
+                                        userImageView.setVisibility(View.GONE);
+                                        imgList.remove(bitmap);
+                                        mapList.remove(bitmap);
+
+                                        notifyDataSetChanged();
+
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setNeutralButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setPositiveButton(R.string.server, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        storage.deleteFile(mapList.get(bitmap));
+                                        StorageReference temp = mStorageRef.child(PreferencesHandler.getValue(context, "userID", "ND")).child(mapList.get(bitmap).substring(mapList.get(bitmap).lastIndexOf("/")+1));
+                                        temp.delete();
+
+                                        userImageView.setVisibility(View.GONE);
+                                        imgList.remove(bitmap);
+                                        mapList.remove(bitmap);
+
+                                        notifyDataSetChanged();
+
+                                        dialog.dismiss();
+                                    }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                        return false;
                     }
                 });
             }

@@ -14,7 +14,12 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+import com.snatik.storage.Storage;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -86,12 +91,16 @@ public class FullscreenActivity extends AppCompatActivity {
         }
     };
 
+    String imageURI;
+    Storage storage;
+
     CryptoHandler cryptoHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        storage = new Storage(getApplicationContext());
         setContentView(R.layout.activity_fullscreen);
 
         mVisible = true;
@@ -111,7 +120,7 @@ public class FullscreenActivity extends AppCompatActivity {
         Intent intent = getIntent();
         try {
 
-            String imageURI = intent.getExtras().getString("ImageURI");
+            imageURI = intent.getExtras().getString("ImageURI");
 
             String fileAsString = null;
             fileAsString = readFile(imageURI, StandardCharsets.UTF_8);
@@ -124,11 +133,6 @@ public class FullscreenActivity extends AppCompatActivity {
             Log.e("Image", "NPE L103");
         }
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-
-        // findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override

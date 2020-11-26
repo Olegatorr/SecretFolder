@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,16 +30,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.snatik.storage.Storage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,10 +53,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.coursework.secretfolder.GalleryActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.CryptoHandler;
 import ua.coursework.secretfolder.utils.MyAdapter;
 import ua.coursework.secretfolder.utils.permissionsHandler;
+
+import ua.coursework.secretfolder.utils.FileDeleter;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -67,6 +77,8 @@ public class ViewFragment extends Fragment {
     String filename = null;
 
     FloatingActionButton fabBtn;
+
+    ProgressBar progressBar;
 
     @Override
     public View onCreateView(
@@ -95,6 +107,8 @@ public class ViewFragment extends Fragment {
         mApplicationDirectory = getContext().getExternalFilesDir(null);
         mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
         cryptoHandler = new CryptoHandler();
+
+        progressBar = view.findViewById(R.id.progressBarUD);
 
         return view;
     }
@@ -135,56 +149,17 @@ public class ViewFragment extends Fragment {
 
             cursor.close();
 
-            File fDelete = new File(picturePath);
-            boolean ifExists = fDelete.exists();
-            boolean canRead = fDelete.canRead();
-            boolean canWrite = fDelete.canWrite();
-            boolean canExecute = fDelete.canExecute();
-
             Bitmap bMap = null;
             try {
+                InputStream in = getActivity().getContentResolver().openInputStream(selectedImage);
                 bMap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(selectedImage));
-            } catch (FileNotFoundException e) {
+                in.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
             writeFileOnInternalStorage(filename, convert(bMap));
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setMessage(R.string.delete_confirm)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            File fDelete = new File(picturePath);
-                            if (fDelete.exists()) {
-                                if (fDelete.delete()) { // TODO: investigate
-                                    Snackbar.make(
-                                            getView(),
-                                            R.string.original_image_is_deleted,
-                                            Snackbar.LENGTH_SHORT
-                                    ).show();
-                                } else {
-                                    Snackbar.make(
-                                            getView(),
-                                            R.string.error_original_img_not_deleted,
-                                            Snackbar.LENGTH_SHORT
-                                    ).show();
-                                }
-                            }
-                        }
-                    })
-                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Snackbar.make(
-                                    getView(),
-                                    R.string.original_image_is_kept,
-                                    Snackbar.LENGTH_SHORT
-                            ).show();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
         }
     }
 
@@ -195,13 +170,18 @@ public class ViewFragment extends Fragment {
 
     public Bitmap convert(String base64Str) throws IllegalArgumentException
     {
-        byte[] test = Base64.decode(base64Str, Base64.DEFAULT);
+        try {
+            byte[] test = Base64.decode(base64Str, Base64.DEFAULT);
+            String decodedBytes = (cryptoHandler.decrypt(getContext(), test));
+            byte[] base64Bytes = Base64.decode(decodedBytes, Base64.DEFAULT);
+            Bitmap decoded = BitmapFactory.decodeByteArray(base64Bytes, 0, base64Bytes.length);
 
-        String decodedBytes = (cryptoHandler.decrypt(getContext(), test));
-        //byte[] base64Bytes = Base64.decode(decodedBytes.substring(decodedBytes.indexOf(",")  + 1), Base64.DEFAULT);
-        byte[] base64Bytes = Base64.decode(decodedBytes, Base64.DEFAULT);
-        Bitmap decoded = BitmapFactory.decodeByteArray(base64Bytes, 0, base64Bytes.length);
-        return decoded;
+            return decoded;
+        }catch (Exception e){
+            Log.e("Decoder", e.toString());
+
+            return null;
+        }
     }
 
     public String convert(Bitmap bitmap)
@@ -209,11 +189,6 @@ public class ViewFragment extends Fragment {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         String base64 = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
-
-        // HERE
-        // String test = new String(cryptoHandler.encrypt(getContext(), base64));
-        // HERE
-
         byte[] encrypted = cryptoHandler.encrypt(getContext(), base64);
         String encryptedString = Base64.encodeToString(encrypted, Base64.DEFAULT);
 
@@ -223,7 +198,6 @@ public class ViewFragment extends Fragment {
     public void writeFileOnInternalStorage(String sFileName, String sBody){
         File dir = mApplicationDirectoryData;
         if(!dir.exists()){
-            //noinspection ResultOfMethodCallIgnored
             dir.mkdir();
         }
 
@@ -270,8 +244,13 @@ public class ViewFragment extends Fragment {
                     e.printStackTrace();
                 }
                 Bitmap bitmap = convert(fileAsString);
-                images.put(bitmap, temp);
-                Log.i("File: ", file.getAbsolutePath());
+                if(bitmap != null){
+                    images.put(bitmap, temp);
+                    Log.i("File: ", file.getAbsolutePath());
+                }else{
+                    Log.w("File: ", file.getAbsolutePath() + " had bad base64");
+                }
+
             }
         }catch (NullPointerException e){
             return null;
@@ -287,11 +266,13 @@ public class ViewFragment extends Fragment {
         return new String(encoded, encoding);
     }
 
-    public void hideFab() {
-        fabBtn.hide();
-    }
+
     public void showFab() {
         fabBtn.show();
+    }
+
+    public ProgressBar getProgressBar(){
+        return progressBar;
     }
 }
 

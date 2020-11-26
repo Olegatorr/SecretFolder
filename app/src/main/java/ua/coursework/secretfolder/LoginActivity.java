@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import ua.coursework.secretfolder.fragments.LoginFragment;
 import ua.coursework.secretfolder.fragments.LoginNewFragment;
-import ua.coursework.secretfolder.utils.preferencesHandler;
+import ua.coursework.secretfolder.utils.PreferencesHandler;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean isPINSaved() {
-        return preferencesHandler.getValue(getAppContext(), "PIN", null) != null;
+        return PreferencesHandler.getValue(getAppContext(), "PIN", null) != null;
     }
 
     public void openFragment(int fragmentID, Fragment fragment){

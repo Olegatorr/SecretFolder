@@ -28,7 +28,7 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String stringKey = preferencesHandler.getValue(context, "PIN", null);
+        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
         byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
 
         SecretKeySpec key = new SecretKeySpec(
@@ -62,7 +62,7 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String stringKey = preferencesHandler.getValue(context, "PIN", null);
+        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
         byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
 
         SecretKeySpec key = new SecretKeySpec(
@@ -95,7 +95,7 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String stringKey = preferencesHandler.getValue(context, "PIN", null);
+        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
         byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
 
         SecretKeySpec key = new SecretKeySpec(
@@ -110,13 +110,14 @@ public class CryptoHandler {
 
         byte[] preparedData = data;
         byte[] cipherText = new byte[0];
+
         try {
             cipherText = cipher.doFinal(preparedData);
         } catch (BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
 
-       String test = new String(cipherText);
+        String test = new String(cipherText);;
 
         return test;
     }
