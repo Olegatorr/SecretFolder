@@ -85,6 +85,17 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        /*
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        this.finish();
+         */
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
     }

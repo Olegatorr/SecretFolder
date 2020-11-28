@@ -22,11 +22,16 @@ import ua.coursework.secretfolder.GalleryActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.PINCrypter;
 import ua.coursework.secretfolder.utils.UIHelper;
+import ua.coursework.secretfolder.utils.md5Calculator;
 
 public class LoginFragment extends Fragment {
 
     private static final int MAX_AVAILABLE_TIMES = 3;
     private FingerprintIdentify mFingerprintIdentify;
+    boolean isBiometricsLoginFailed = false;
+    private final md5Calculator md5 = new md5Calculator();
+
+    Button bFingerprint;
 
     @Override
     public View onCreateView(
@@ -41,7 +46,7 @@ public class LoginFragment extends Fragment {
         final EditText passField = (EditText) view.findViewById(R.id.passText);
         final TextView errorText = (TextView) view.findViewById(R.id.textError);
         final Button bLogin = (Button) view.findViewById(R.id.button_first);
-        final Button bFingerprint = (Button) view.findViewById(R.id.buttonFingerprint);
+        bFingerprint = (Button) view.findViewById(R.id.buttonFingerprint);
 
         PINCrypter.init(getContext());
 
@@ -80,7 +85,8 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    if ((passField.getText().toString()).equals(PINCrypter.getPin())) {
+
+                    if (md5.md5Apache(passField.getText().toString()).equals(PINCrypter.getPin())) {
                         onLoginSuccess();
 
                     } else {
@@ -98,7 +104,6 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
 
                 Log.i("FINGERPRINT", "Click");
-
                 waitForFingerprint(true);
 
             }
@@ -144,6 +149,8 @@ public class LoginFragment extends Fragment {
                     mFingerprintIdentify.cancelIdentify();
                     UIhelper.showToastL(getResources().getString(R.string.fingerprint_login_failed_Use_PIN));
                     finalAlertDialog.dismiss();
+                    isBiometricsLoginFailed = true;
+                    bFingerprint.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -151,6 +158,8 @@ public class LoginFragment extends Fragment {
                     Log.e("FINGERPRINT", "Fingerprint recognition failed by device lock");
                     mFingerprintIdentify.cancelIdentify();
                     finalAlertDialog.dismiss();
+                    isBiometricsLoginFailed = true;
+                    bFingerprint.setVisibility(View.GONE);
                 }
             });
 

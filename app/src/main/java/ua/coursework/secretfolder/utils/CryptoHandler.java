@@ -36,7 +36,6 @@ public class CryptoHandler {
         SecretKeySpec key = new SecretKeySpec(
                 byteKey16,
                 "AES");
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(byteKey16);
         try {
             cipher.init(Cipher.ENCRYPT_MODE, key);
         } catch (InvalidKeyException e) {
@@ -47,39 +46,6 @@ public class CryptoHandler {
         byte[] cipherText = new byte[0];
         try {
             cipherText = cipher.doFinal(preparedData);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
-        return cipherText;
-    }
-
-    public byte[] encrypt(Context context, byte[] data) {
-
-        // AES = симметричный алгоритм шафрования
-        // CBC = режим алгоритма AES
-        // PKCS5Padding = режим обработки последних байт данных
-        try {
-            cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        }
-
-        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
-        byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
-
-        SecretKeySpec key = new SecretKeySpec(
-                byteKey16,
-                "AES");
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(byteKey16);
-        try {
-            cipher.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
-        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        }
-
-        byte[] cipherText = new byte[0];
-        try {
-            cipherText = cipher.doFinal(data);
         } catch (BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }

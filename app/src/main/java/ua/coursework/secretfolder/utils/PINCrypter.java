@@ -6,8 +6,7 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
-import java.util.Objects;
+import ua.coursework.secretfolder.utils.md5Calculator;
 
 import javax.crypto.Cipher;
 
@@ -20,6 +19,7 @@ import ua.coursework.secretfolder.BuildConfig;
 @RequiresApi(Build.VERSION_CODES.M)
 public class PINCrypter {
 
+    private static final md5Calculator md5 = new md5Calculator();
     private static final String PREF_FILE = BuildConfig.APPLICATION_ID.replace(".", "_");
     private static SharedPreferences PREFS;
     private static CipherCrypter CRYPTER;
@@ -27,27 +27,30 @@ public class PINCrypter {
 
     @Nullable
     public static String getPin() {
-        String encryptedPin = PREFS.getString("pin", "");
+        String encryptedPin = PREFS.getString("MmzD5LnDLfnhu8Q8", "");
         if ("".equals(encryptedPin)) {
             return "";
         }
 
-        Cipher cipher = FACTORY.createDecryptionCrypter("pin");
+        Cipher cipher = FACTORY.createDecryptionCrypter("MmzD5LnDLfnhu8Q8");
         if (cipher == null) {
             return "";
         }
 
-        return CRYPTER.decrypt(cipher, encryptedPin);
+        String decrypted = CRYPTER.decrypt(cipher, encryptedPin);
+
+        return decrypted;
     }
 
     public static void setPin(String pin) {
-        Cipher cipher = FACTORY.createEncryptionCrypter("pin");
+        Cipher cipher = FACTORY.createEncryptionCrypter("MmzD5LnDLfnhu8Q8");
         if (cipher == null) {
             return;
         }
 
-        String encryptedPin = CRYPTER.encrypt(cipher, pin);
-        PREFS.edit().putString("pin", encryptedPin).apply();
+        String passMD5 = md5.md5Apache(pin);
+        String encryptedPin = CRYPTER.encrypt(cipher, passMD5);
+        PREFS.edit().putString("MmzD5LnDLfnhu8Q8", encryptedPin).apply();
 
     }
 
@@ -58,12 +61,12 @@ public class PINCrypter {
     }
 
     public static boolean getFingerAuth() {
-        String encryptedPin = PREFS.getString("finger", "");
+        String encryptedPin = PREFS.getString("RFu49REaA8EUVx2v", "");
         if ("".equals(encryptedPin)) {
             return false;
         }
 
-        Cipher cipher = FACTORY.createDecryptionCrypter("finger");
+        Cipher cipher = FACTORY.createDecryptionCrypter("RFu49REaA8EUVx2v");
         if (cipher == null) {
             return false;
         }
@@ -76,12 +79,12 @@ public class PINCrypter {
     }
 
     public static void setFingerAuth(boolean bool) {
-        Cipher cipher = FACTORY.createEncryptionCrypter("finger");
+        Cipher cipher = FACTORY.createEncryptionCrypter("RFu49REaA8EUVx2v");
         if (cipher == null) {
             return;
         }
 
         String encryptedBool = CRYPTER.encrypt(cipher, String.valueOf(bool));
-        PREFS.edit().putString("finger", encryptedBool).apply();
+        PREFS.edit().putString("RFu49REaA8EUVx2v", encryptedBool).apply();
     }
 }
