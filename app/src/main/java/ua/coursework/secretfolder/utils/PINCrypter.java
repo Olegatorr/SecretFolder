@@ -68,7 +68,11 @@ public class PINCrypter {
             return false;
         }
 
-        return Objects.equals(CRYPTER.decrypt(cipher, encryptedPin), String.valueOf(true));
+        if (CRYPTER.decrypt(cipher, encryptedPin).equals(String.valueOf(true))){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public static void setFingerAuth(boolean bool) {

@@ -104,7 +104,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        if (PINCrypter.getFingerAuth())
+        if (!PINCrypter.getFingerAuth())
             bFingerprint.setVisibility(View.GONE);
 
     }
