@@ -49,19 +49,29 @@ import static android.app.Activity.RESULT_OK;
 
 public class ViewFragment extends Fragment {
 
+    public AppCompatActivity activity;
     File mApplicationDirectory;
     File mApplicationDirectoryData;
     RecyclerView recyclerView;
     MyAdapter adapter;
     CryptoHandler cryptoHandler;
-    public AppCompatActivity activity;
-
     String picturePath = null;
     String filename = null;
 
     FloatingActionButton fabBtn;
 
     ProgressBar progressBar;
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    static String readFile(String path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
 
     @Override
     public View onCreateView(
@@ -198,11 +208,6 @@ public class ViewFragment extends Fragment {
         }
     }
 
-    public static void hideKeyboardFrom(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     private void loadImages() {
         Map<Bitmap, String> images = getImages();
         adapter.clearItems();
@@ -244,13 +249,6 @@ public class ViewFragment extends Fragment {
 
         return images;
     }
-
-    static String readFile(String path, Charset encoding)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-    }
-
 
     public void showFab() {
         fabBtn.show();

@@ -45,14 +45,12 @@ public class GalleryActivity extends AppCompatActivity {
     AppCompatActivity activity;
     File mApplicationDirectory;
     File mApplicationDirectoryData;
-    private StorageReference mStorageRef;
-    private FirebaseAuth mAuth;
-
     ProgressBar progressBar;
     ProgressBarHelper progressBarHelper;
     UIHelper snackbar;
-
     FirebaseUser user;
+    private StorageReference mStorageRef;
+    private FirebaseAuth mAuth;
 
     @Override
     public void onStart() {

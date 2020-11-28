@@ -32,11 +32,11 @@ import static androidx.core.content.ContextCompat.startActivity;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
     private final List<Bitmap> imgList = new ArrayList<>();
-    private Map<Bitmap, String> mapList = new LinkedHashMap<Bitmap, String>();
+    private final StorageReference mStorageRef;
     AppCompatActivity activity;
     Context context;
     Storage storage;
-    private final StorageReference mStorageRef;
+    private Map<Bitmap, String> mapList = new LinkedHashMap<Bitmap, String>();
 
 
     public MyAdapter(AppCompatActivity activity, Context context) {
@@ -44,82 +44,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         this.context = context;
         storage = new Storage(context);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-    }
-
-    class ImgViewHolder extends RecyclerView.ViewHolder {
-
-        private final ImageView userImageView;
-
-        public ImgViewHolder(View itemView) {
-            super(itemView);
-            userImageView = itemView.findViewById(R.id.galleryItem);
-        }
-
-        public void bind(final Bitmap bitmap) {
-            userImageView.setImageBitmap(bitmap);
-            userImageView.setVisibility(bitmap != null ? View.VISIBLE : View.GONE);
-
-            userImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    // TODO : send bm
-                    Intent intent = new Intent(context, FullscreenActivity.class);
-                    intent.putExtra("ImageURI", mapList.get(bitmap));
-                    startActivity(context, intent, null);
-                }
-            });
-
-            userImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage(R.string.where_delete)
-                            .setCancelable(false)
-                            .setNegativeButton(R.string.local, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-
-                                    storage.deleteFile(mapList.get(bitmap));
-
-                                    userImageView.setVisibility(View.GONE);
-                                    imgList.remove(bitmap);
-                                    mapList.remove(bitmap);
-
-                                    notifyDataSetChanged();
-
-                                    dialog.dismiss();
-                                }
-                            })
-                            .setNeutralButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            })
-                            .setPositiveButton(R.string.server, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-
-                                    storage.deleteFile(mapList.get(bitmap));
-                                    StorageReference temp = mStorageRef.child(PreferencesHandler.getValue(context, "userID", "ND")).child(mapList.get(bitmap).substring(mapList.get(bitmap).lastIndexOf("/") + 1));
-                                    temp.delete();
-
-                                    userImageView.setVisibility(View.GONE);
-                                    imgList.remove(bitmap);
-                                    mapList.remove(bitmap);
-
-                                    notifyDataSetChanged();
-
-                                    dialog.dismiss();
-                                }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-
-                    return false;
-                }
-            });
-        }
-
     }
 
     @Override
@@ -160,6 +84,82 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
             e.getMessage();
             return null;
         }
+    }
+
+    class ImgViewHolder extends RecyclerView.ViewHolder {
+
+        private final ImageView userImageView;
+
+        public ImgViewHolder(View itemView) {
+            super(itemView);
+            userImageView = itemView.findViewById(R.id.galleryItem);
+        }
+
+        public void bind(final Bitmap bitmap) {
+            userImageView.setImageBitmap(bitmap);
+            userImageView.setVisibility(bitmap != null ? View.VISIBLE : View.GONE);
+
+            userImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    // TODO : send bm
+                    Intent intent = new Intent(context, FullscreenActivity.class);
+                    intent.putExtra("ImageURI", mapList.get(bitmap));
+                    startActivity(context, intent, null);
+                }
+            });
+
+            userImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage(activity.getResources().getString(R.string.where_delete))
+                            .setCancelable(false)
+                            .setNegativeButton(activity.getResources().getString(R.string.local), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    storage.deleteFile(mapList.get(bitmap));
+
+                                    userImageView.setVisibility(View.GONE);
+                                    imgList.remove(bitmap);
+                                    mapList.remove(bitmap);
+
+                                    notifyDataSetChanged();
+
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton(activity.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setPositiveButton(activity.getResources().getString(R.string.server), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    storage.deleteFile(mapList.get(bitmap));
+                                    StorageReference temp = mStorageRef.child(PreferencesHandler.getValue(context, "userID", "ND")).child(mapList.get(bitmap).substring(mapList.get(bitmap).lastIndexOf("/") + 1));
+                                    temp.delete();
+
+                                    userImageView.setVisibility(View.GONE);
+                                    imgList.remove(bitmap);
+                                    mapList.remove(bitmap);
+
+                                    notifyDataSetChanged();
+
+                                    dialog.dismiss();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                    return false;
+                }
+            });
+        }
+
     }
 
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import ua.coursework.secretfolder.R;
+
 public class ProgressBarHelper {
 
     ProgressBar progressBar;
@@ -34,7 +36,7 @@ public class ProgressBarHelper {
             progressBar.setVisibility(View.INVISIBLE);
             progressBar.setMax(0);
             progressBar.setProgress(0);
-            snackBar.showSnackbar("Done!");
+            snackBar.showSnackbar(context.getResources().getString(R.string.done));
         } else {
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(count);
@@ -48,7 +50,7 @@ public class ProgressBarHelper {
         progressBar.setMax(0);
         progressBar.setProgress(0);
 
-        snackBar.showSnackbar("Something went wrong");
+        snackBar.showSnackbar(context.getResources().getString(R.string.Something_went_wrong));
     }
 
 }

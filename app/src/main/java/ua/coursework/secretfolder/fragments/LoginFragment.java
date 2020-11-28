@@ -25,8 +25,8 @@ import ua.coursework.secretfolder.utils.UIHelper;
 
 public class LoginFragment extends Fragment {
 
-    private FingerprintIdentify mFingerprintIdentify;
     private static final int MAX_AVAILABLE_TIMES = 3;
+    private FingerprintIdentify mFingerprintIdentify;
 
     @Override
     public View onCreateView(
@@ -116,8 +116,8 @@ public class LoginFragment extends Fragment {
         final UIHelper UIhelper = new UIHelper(getView(), getContext());
         if (bool) {
             alertDialogBuilder = new AlertDialog.Builder(getContext());
-            alertDialogBuilder.setTitle(R.string.touch_sensor);
-            alertDialogBuilder.setMessage(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder).setCancelable(false);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.touch_sensor));
+            alertDialogBuilder.setMessage(getResources().getString(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder)).setCancelable(false);
             alertDialog = alertDialogBuilder.create();
             alertDialog.show();
 
@@ -135,14 +135,14 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onNotMatch(int availableTimes) {
                     Log.w("FINGERPRINT", "Fingerprint not matched");
-                    UIhelper.showToastS(getString(R.string.fingerprint_not_matched));
+                    UIhelper.showToastS(getResources().getString(R.string.fingerprint_not_matched));
                 }
 
                 @Override
                 public void onFailed(boolean isDeviceLocked) {
                     Log.e("FINGERPRINT", "Fingerprint recognition failed by user");
                     mFingerprintIdentify.cancelIdentify();
-                    UIhelper.showToastL(getString(R.string.fingerprint_login_failed_Use_PIN));
+                    UIhelper.showToastL(getResources().getString(R.string.fingerprint_login_failed_Use_PIN));
                     finalAlertDialog.dismiss();
                 }
 

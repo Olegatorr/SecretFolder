@@ -40,12 +40,6 @@ public class PINCrypter {
         return CRYPTER.decrypt(cipher, encryptedPin);
     }
 
-    public static void init(Context context) {
-        PREFS = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
-        CRYPTER = new Base64CipherCrypter();
-        FACTORY = new UnlockedAesCipherFactory(context);
-    }
-
     public static void setPin(String pin) {
         Cipher cipher = FACTORY.createEncryptionCrypter("pin");
         if (cipher == null) {
@@ -57,14 +51,10 @@ public class PINCrypter {
 
     }
 
-    public static void setFingerAuth(boolean bool) {
-        Cipher cipher = FACTORY.createEncryptionCrypter("finger");
-        if (cipher == null) {
-            return;
-        }
-
-        String encryptedBool = CRYPTER.encrypt(cipher, String.valueOf(bool));
-        PREFS.edit().putString("finger", encryptedBool).apply();
+    public static void init(Context context) {
+        PREFS = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        CRYPTER = new Base64CipherCrypter();
+        FACTORY = new UnlockedAesCipherFactory(context);
     }
 
     public static boolean getFingerAuth() {
@@ -79,5 +69,15 @@ public class PINCrypter {
         }
 
         return Objects.equals(CRYPTER.decrypt(cipher, encryptedPin), String.valueOf(true));
+    }
+
+    public static void setFingerAuth(boolean bool) {
+        Cipher cipher = FACTORY.createEncryptionCrypter("finger");
+        if (cipher == null) {
+            return;
+        }
+
+        String encryptedBool = CRYPTER.encrypt(cipher, String.valueOf(bool));
+        PREFS.edit().putString("finger", encryptedBool).apply();
     }
 }

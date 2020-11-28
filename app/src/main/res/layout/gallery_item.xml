@@ -11,12 +11,12 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:clickable="true"
+        android:contentDescription="@string/loaded_image"
         android:longClickable="true"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars"
-        android:contentDescription="@string/loaded_image" />
+        tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>

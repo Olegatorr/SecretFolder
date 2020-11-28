@@ -27,10 +27,10 @@ import ua.coursework.secretfolder.utils.UIHelper;
 
 public class LoginNewFragment extends Fragment {
 
+    private static final int MAX_AVAILABLE_TIMES = 3;
     private boolean isFirstPINEntered = false;
     private String firstPIN = "";
     private FingerprintIdentify mFingerprintIdentify;
-    private static final int MAX_AVAILABLE_TIMES = 3;
 
     @Override
     public View onCreateView(
@@ -84,25 +84,25 @@ public class LoginNewFragment extends Fragment {
                 if (!isFirstPINEntered) {
                     firstPIN = passField.getText().toString();
                     passField.getText().clear();
-                    textViewSetUp.setText(R.string.confirm_pin);
+                    textViewSetUp.setText(getResources().getString(R.string.confirm_pin));
                     isFirstPINEntered = true;
                 } else {
                     if (passField.getText().toString().equals(firstPIN)) {
-                        Snackbar.make(view, R.string.pin_set_up, Snackbar.LENGTH_SHORT)
-                                .setAction(R.string.pin_set_up, null).show();
+                        Snackbar.make(view, getResources().getString(R.string.pin_set_up), Snackbar.LENGTH_SHORT)
+                                .setAction(getResources().getString(R.string.pin_set_up), null).show();
 
                         PINCrypter.setPin(firstPIN);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage(R.string.do_you_want_to_use_fingerprint_to_login)
+                        builder.setMessage(getResources().getString(R.string.do_you_want_to_use_fingerprint_to_login))
                                 .setCancelable(false)
-                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                         waitForFingerprint(true);
                                     }
                                 })
-                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         PINCrypter.setFingerAuth(false);
                                         dialog.dismiss();
@@ -128,8 +128,8 @@ public class LoginNewFragment extends Fragment {
         final UIHelper UIhelper = new UIHelper(getView(), getContext());
         if (bool) {
             alertDialogBuilder = new AlertDialog.Builder(getContext());
-            alertDialogBuilder.setTitle(R.string.touch_sensor);
-            alertDialogBuilder.setMessage(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder).setCancelable(false);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.touch_sensor));
+            alertDialogBuilder.setMessage(getResources().getString(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder)).setCancelable(false);
             alertDialog = alertDialogBuilder.create();
             alertDialog.show();
 
@@ -140,7 +140,7 @@ public class LoginNewFragment extends Fragment {
                 public void onSucceed() {
                     Log.i("FINGERPRINT", "Success");
                     PINCrypter.setFingerAuth(true);
-                    UIhelper.showToastL(getString(R.string.fingerprint_login_enabled));
+                    UIhelper.showToastL(getResources().getString(R.string.fingerprint_login_enabled));
                     finalAlertDialog.dismiss();
                     onLoginSetSuccess();
                 }
@@ -148,14 +148,14 @@ public class LoginNewFragment extends Fragment {
                 @Override
                 public void onNotMatch(int availableTimes) {
                     Log.w("FINGERPRINT", "Fingerprint not matched");
-                    UIhelper.showToastS(getString(R.string.fingerprint_not_matched));
+                    UIhelper.showToastS(getResources().getString(R.string.fingerprint_not_matched));
                 }
 
                 @Override
                 public void onFailed(boolean isDeviceLocked) {
                     Log.e("FINGERPRINT", "Fingerprint recognition failed by user");
                     mFingerprintIdentify.cancelIdentify();
-                    UIhelper.showToastL(getString(R.string.fingerprint_login_disabled));
+                    UIhelper.showToastL(getResources().getString(R.string.fingerprint_login_disabled));
                     finalAlertDialog.dismiss();
                     PINCrypter.setFingerAuth(false);
                     onLoginSetSuccess();

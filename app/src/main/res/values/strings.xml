@@ -38,5 +38,7 @@
     <string name="fingerprint_not_matched">Fingerprint not matched</string>
     <string name="fingerprint_login_disabled">Fingerprint login disabled</string>
     <string name="fingerprint_login_failed_Use_PIN">Fingerprint login failed. Use PIN</string>
+    <string name="done">Done!</string>
+    <string name="Something_went_wrong">Something went wrong</string>
 
 </resources>
