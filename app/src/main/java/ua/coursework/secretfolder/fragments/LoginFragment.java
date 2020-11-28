@@ -38,10 +38,10 @@ public class LoginFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final EditText passField = (EditText)view.findViewById(R.id.passText);
-        final TextView errorText = (TextView)view.findViewById(R.id.textError);
-        final Button bLogin = (Button)view.findViewById(R.id.button_first);
-        final Button bFingerprint = (Button)view.findViewById(R.id.buttonFingerprint);
+        final EditText passField = (EditText) view.findViewById(R.id.passText);
+        final TextView errorText = (TextView) view.findViewById(R.id.textError);
+        final Button bLogin = (Button) view.findViewById(R.id.button_first);
+        final Button bFingerprint = (Button) view.findViewById(R.id.buttonFingerprint);
 
         PINCrypter.init(getContext());
 
@@ -62,8 +62,8 @@ public class LoginFragment extends Fragment {
         passField.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                    switch (i){
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (i) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             bLogin.callOnClick();
@@ -86,7 +86,7 @@ public class LoginFragment extends Fragment {
                     } else {
                         errorText.setVisibility(View.VISIBLE);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     errorText.setVisibility(View.VISIBLE);
                     e.printStackTrace();
                 }
@@ -104,17 +104,17 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        if(PINCrypter.getFingerAuth())
+        if (PINCrypter.getFingerAuth())
             bFingerprint.setVisibility(View.GONE);
 
     }
 
-    private void waitForFingerprint(Boolean bool){
+    private void waitForFingerprint(Boolean bool) {
 
         AlertDialog.Builder alertDialogBuilder;
         AlertDialog alertDialog = null;
         final UIHelper UIhelper = new UIHelper(getView(), getContext());
-        if(bool){
+        if (bool) {
             alertDialogBuilder = new AlertDialog.Builder(getContext());
             alertDialogBuilder.setTitle(R.string.touch_sensor);
             alertDialogBuilder.setMessage(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder).setCancelable(false);
@@ -154,7 +154,7 @@ public class LoginFragment extends Fragment {
                 }
             });
 
-        }else{
+        } else {
             alertDialog.dismiss();
         }
     }

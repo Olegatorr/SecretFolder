@@ -12,36 +12,36 @@ public class ProgressBarHelper {
 
     int count = 0;
 
-    public ProgressBarHelper(ProgressBar progressBar, Context context){
+    public ProgressBarHelper(ProgressBar progressBar, Context context) {
         this.progressBar = progressBar;
         this.context = context;
         snackBar = new UIHelper(progressBar, context);
     }
 
-    public void add(){
-        count ++;
+    public void add() {
+        count++;
         updateProgressBar();
     }
 
-    public void setMax(int max){
+    public void setMax(int max) {
         progressBar.setMax(max);
         updateProgressBar();
     }
 
-    private void updateProgressBar(){
-        if(count < 0 || count >= progressBar.getMax()){
+    private void updateProgressBar() {
+        if (count < 0 || count >= progressBar.getMax()) {
             count = 0;
             progressBar.setVisibility(View.INVISIBLE);
             progressBar.setMax(0);
             progressBar.setProgress(0);
             snackBar.showSnackbar("Done!");
-        }else{
+        } else {
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(count);
         }
     }
 
-    public void abort(){
+    public void abort() {
 
         count = 0;
         progressBar.setVisibility(View.INVISIBLE);

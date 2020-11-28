@@ -31,12 +31,12 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
 
-    private List<Bitmap> imgList = new ArrayList<>();
+    private final List<Bitmap> imgList = new ArrayList<>();
     private Map<Bitmap, String> mapList = new LinkedHashMap<Bitmap, String>();
     AppCompatActivity activity;
     Context context;
     Storage storage;
-    private StorageReference mStorageRef;
+    private final StorageReference mStorageRef;
 
 
     public MyAdapter(AppCompatActivity activity, Context context) {
@@ -46,79 +46,79 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
-    class ImgViewHolder extends RecyclerView.ViewHolder{
+    class ImgViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView userImageView;
+        private final ImageView userImageView;
 
-            public ImgViewHolder(View itemView){
-                super(itemView);
-                userImageView = itemView.findViewById(R.id.galleryItem);
-            }
+        public ImgViewHolder(View itemView) {
+            super(itemView);
+            userImageView = itemView.findViewById(R.id.galleryItem);
+        }
 
-            public void bind (final Bitmap bitmap){
-                userImageView.setImageBitmap(bitmap);
-                userImageView.setVisibility(bitmap != null ? View.VISIBLE : View.GONE);
+        public void bind(final Bitmap bitmap) {
+            userImageView.setImageBitmap(bitmap);
+            userImageView.setVisibility(bitmap != null ? View.VISIBLE : View.GONE);
 
-                userImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+            userImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                        // TODO : send bm
-                        Intent intent = new Intent(context, FullscreenActivity.class);
-                        intent.putExtra("ImageURI", mapList.get(bitmap));
-                        startActivity(context, intent, null);
-                    }
-                });
+                    // TODO : send bm
+                    Intent intent = new Intent(context, FullscreenActivity.class);
+                    intent.putExtra("ImageURI", mapList.get(bitmap));
+                    startActivity(context, intent, null);
+                }
+            });
 
-                userImageView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
+            userImageView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setMessage(R.string.where_delete)
-                                .setCancelable(false)
-                                .setNegativeButton(R.string.local, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage(R.string.where_delete)
+                            .setCancelable(false)
+                            .setNegativeButton(R.string.local, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 
-                                        storage.deleteFile(mapList.get(bitmap));
+                                    storage.deleteFile(mapList.get(bitmap));
 
-                                        userImageView.setVisibility(View.GONE);
-                                        imgList.remove(bitmap);
-                                        mapList.remove(bitmap);
+                                    userImageView.setVisibility(View.GONE);
+                                    imgList.remove(bitmap);
+                                    mapList.remove(bitmap);
 
-                                        notifyDataSetChanged();
+                                    notifyDataSetChanged();
 
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .setNeutralButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                })
-                                .setPositiveButton(R.string.server, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setNeutralButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setPositiveButton(R.string.server, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
 
-                                        storage.deleteFile(mapList.get(bitmap));
-                                        StorageReference temp = mStorageRef.child(PreferencesHandler.getValue(context, "userID", "ND")).child(mapList.get(bitmap).substring(mapList.get(bitmap).lastIndexOf("/")+1));
-                                        temp.delete();
+                                    storage.deleteFile(mapList.get(bitmap));
+                                    StorageReference temp = mStorageRef.child(PreferencesHandler.getValue(context, "userID", "ND")).child(mapList.get(bitmap).substring(mapList.get(bitmap).lastIndexOf("/") + 1));
+                                    temp.delete();
 
-                                        userImageView.setVisibility(View.GONE);
-                                        imgList.remove(bitmap);
-                                        mapList.remove(bitmap);
+                                    userImageView.setVisibility(View.GONE);
+                                    imgList.remove(bitmap);
+                                    mapList.remove(bitmap);
 
-                                        notifyDataSetChanged();
+                                    notifyDataSetChanged();
 
-                                        dialog.dismiss();
-                                    }
-                        });
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                                    dialog.dismiss();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
 
-                        return false;
-                    }
-                });
-            }
+                    return false;
+                }
+            });
+        }
 
     }
 
@@ -151,13 +151,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
         notifyDataSetChanged();
     }
 
-    public Bitmap StringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
+    public Bitmap StringToBitMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
             Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
             return bitmap;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
