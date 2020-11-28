@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 
@@ -86,6 +87,8 @@ public class ViewFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
         View view = inflater.inflate(R.layout.fragment_view, container, false);
         FloatingActionButton fab = getActivity().findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +117,9 @@ public class ViewFragment extends Fragment {
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.imagegallery);

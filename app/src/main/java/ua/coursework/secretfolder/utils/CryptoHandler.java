@@ -15,7 +15,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoHandler {
+
     Cipher cipher;
+    md5Calculator md5 = new md5Calculator();
 
     public byte[] encrypt(Context context, String data){
 
@@ -28,7 +30,7 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
+        String stringKey = md5.md5Apache(PINCrypter.getPin());
         byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
 
         SecretKeySpec key = new SecretKeySpec(
@@ -95,13 +97,12 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String stringKey = PreferencesHandler.getValue(context, "PIN", null);
+        String stringKey = md5.md5Apache(PINCrypter.getPin());
         byte[] byteKey16 = Arrays.copyOfRange(stringKey.getBytes(), 0, 16);
 
         SecretKeySpec key = new SecretKeySpec(
                 byteKey16,
                 "AES");
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(byteKey16);
         try {
             cipher.init(Cipher.DECRYPT_MODE, key);
         } catch (InvalidKeyException e) {

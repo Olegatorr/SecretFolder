@@ -14,7 +14,6 @@ public class PreferencesHandler {
         sharedPreferences = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
     }
 
-    //For string value
     public static String getValue(Context context, String key, String defaultValue) {
         PreferencesHandler.openPref(context);
         String result = PreferencesHandler.sharedPreferences.getString(key, defaultValue);
@@ -29,8 +28,6 @@ public class PreferencesHandler {
         prefsPrivateEditor.commit();
         PreferencesHandler.sharedPreferences = null;
     }
-
-    //You can create method like above for boolean, float, int etc...
 }
 
 

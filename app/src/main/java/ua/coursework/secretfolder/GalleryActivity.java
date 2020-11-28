@@ -21,7 +21,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
@@ -37,7 +36,7 @@ import java.util.List;
 
 import ua.coursework.secretfolder.fragments.ViewFragment;
 import ua.coursework.secretfolder.utils.ProgressBarHelper;
-import ua.coursework.secretfolder.utils.SnackbarHelper;
+import ua.coursework.secretfolder.utils.UIHelper;
 import ua.coursework.secretfolder.utils.permissionsHandler;
 import ua.coursework.secretfolder.utils.PreferencesHandler;
 
@@ -51,7 +50,7 @@ public class GalleryActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
     ProgressBarHelper progressBarHelper;
-    SnackbarHelper snackbar;
+    UIHelper snackbar;
 
     FirebaseUser user;
 
@@ -105,7 +104,7 @@ public class GalleryActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         ViewFragment fragment = (ViewFragment)fm.findFragmentById(R.id.nav_host_fragment);
         ProgressBar progressBarTemp = fragment.getProgressBar();
-        progressBarHelper = new ProgressBarHelper(progressBarTemp);
+        progressBarHelper = new ProgressBarHelper(progressBarTemp, getApplicationContext());
 
         File[] files = mApplicationDirectoryData.listFiles();
 

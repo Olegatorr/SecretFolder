@@ -1,31 +1,25 @@
 package ua.coursework.secretfolder.utils;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ProgressBar;
 
 public class ProgressBarHelper {
 
     ProgressBar progressBar;
-    SnackbarHelper snackBar;
+    UIHelper snackBar;
+    Context context;
+
     int count = 0;
 
-    public ProgressBarHelper(ProgressBar progressBar){
+    public ProgressBarHelper(ProgressBar progressBar, Context context){
         this.progressBar = progressBar;
-        snackBar = new SnackbarHelper(progressBar);
+        this.context = context;
+        snackBar = new UIHelper(progressBar, context);
     }
 
     public void add(){
         count ++;
-        updateProgressBar();
-    }
-
-    public void sub(){
-        count --;
-        updateProgressBar();
-    }
-
-    public void set(int digit){
-        count = digit;
         updateProgressBar();
     }
 
@@ -40,7 +34,7 @@ public class ProgressBarHelper {
             progressBar.setVisibility(View.INVISIBLE);
             progressBar.setMax(0);
             progressBar.setProgress(0);
-            snackBar.show("Done!");
+            snackBar.showSnackbar("Done!");
         }else{
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(count);
@@ -54,7 +48,7 @@ public class ProgressBarHelper {
         progressBar.setMax(0);
         progressBar.setProgress(0);
 
-        snackBar.show("Something went wrong");
+        snackBar.showSnackbar("Something went wrong");
     }
 
 }

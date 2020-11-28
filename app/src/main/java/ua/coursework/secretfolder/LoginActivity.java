@@ -1,16 +1,19 @@
 package ua.coursework.secretfolder;
 
-import android.content.Context;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import ua.coursework.secretfolder.fragments.LoginFragment;
 import ua.coursework.secretfolder.fragments.LoginNewFragment;
-import ua.coursework.secretfolder.utils.PreferencesHandler;
+import ua.coursework.secretfolder.utils.PINCrypter;
 
+@RequiresApi(Build.VERSION_CODES.M)
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -18,6 +21,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        PINCrypter.init(this);
 
         if(isPINSaved()){
             openFragment(R.id.nav_host_fragment, new LoginFragment());
@@ -27,12 +32,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public Context getAppContext() {
-        return getApplicationContext();
-    }
-
     public boolean isPINSaved() {
-        return PreferencesHandler.getValue(getAppContext(), "PIN", null) != null;
+        String pin = PINCrypter.getPin();
+        if ("".equals(pin)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void openFragment(int fragmentID, Fragment fragment){
@@ -42,5 +48,9 @@ public class LoginActivity extends AppCompatActivity {
         tx.commit();
     }
 
+
+
 }
+
+
 
