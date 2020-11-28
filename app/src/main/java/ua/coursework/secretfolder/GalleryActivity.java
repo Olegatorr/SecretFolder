@@ -21,13 +21,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +35,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import ua.coursework.secretfolder.fragments.ViewFragment;
+import ua.coursework.secretfolder.utils.PreferencesHandler;
 import ua.coursework.secretfolder.utils.ProgressBarHelper;
 import ua.coursework.secretfolder.utils.UIHelper;
 import ua.coursework.secretfolder.utils.permissionsHandler;
-import ua.coursework.secretfolder.utils.PreferencesHandler;
 
 public class GalleryActivity extends AppCompatActivity {
 
@@ -102,7 +102,7 @@ public class GalleryActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         FragmentManager fm = getSupportFragmentManager();
-        ViewFragment fragment = (ViewFragment)fm.findFragmentById(R.id.nav_host_fragment);
+        ViewFragment fragment = (ViewFragment) fm.findFragmentById(R.id.nav_host_fragment);
         ProgressBar progressBarTemp = fragment.getProgressBar();
         progressBarHelper = new ProgressBarHelper(progressBarTemp, getApplicationContext());
 
@@ -124,10 +124,10 @@ public class GalleryActivity extends AppCompatActivity {
 
             return true;
 
-        }else if(id == R.id.action_download){
+        } else if (id == R.id.action_download) {
 
             mStorageRef = FirebaseStorage.getInstance().getReference();
-            StorageReference gsReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://secretfolder-dc714.appspot.com/"  + PreferencesHandler.getValue(getApplicationContext(), "userID", "ND"));
+            StorageReference gsReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://secretfolder-dc714.appspot.com/" + PreferencesHandler.getValue(getApplicationContext(), "userID", "ND"));
 
             Task listAllTask = gsReference.listAll();
 
@@ -146,10 +146,10 @@ public class GalleryActivity extends AppCompatActivity {
 
                                     String fileName = prefix.getName();
 
-                                    if(!new File(mApplicationDirectoryData + "/" + fileName).exists()){
+                                    if (!new File(mApplicationDirectoryData + "/" + fileName).exists()) {
 
                                         File localFile = new File(mApplicationDirectoryData + "/" + fileName);
-                                        if(!localFile.createNewFile()){
+                                        if (!localFile.createNewFile()) {
                                             break;
                                         }
                                         prefix.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
@@ -168,7 +168,7 @@ public class GalleryActivity extends AppCompatActivity {
                                                 Log.e("Firebase File Download", "FAILURE: \n\n" + e.toString());
                                             }
                                         });
-                                    }else{
+                                    } else {
 
                                         progressBarHelper.add();
                                         Log.i("Firebase Download", "FILE EXISTS");
@@ -191,11 +191,11 @@ public class GalleryActivity extends AppCompatActivity {
                         }
                     });
 
-        }else if(id == R.id.action_upload){
+        } else if (id == R.id.action_upload) {
 
             progressBarHelper.setMax(files.length);
 
-            for(File mFile : files) {
+            for (File mFile : files) {
 
                 Uri file = Uri.fromFile(mFile);
                 StorageReference riversRef = mStorageRef.child(PreferencesHandler.getValue(getApplicationContext(), "userID", "ND") + "/" + file.getLastPathSegment());
@@ -223,19 +223,17 @@ public class GalleryActivity extends AppCompatActivity {
 
                 });
             }
-        }else if(id == R.id.action_refresh){
+        } else if (id == R.id.action_refresh) {
             Intent intent = new Intent(getApplicationContext(), GalleryActivity.class);
             startActivity(intent);
             activity.finish();
-        }
-
-        else if(id == R.id.logout){
+        } else if (id == R.id.logout) {
             signOut();
             delete();
             Toast.makeText(getApplicationContext(),
                     "Logout successful", Toast.LENGTH_LONG).show();
 
-        }else if(id == R.id.settings){
+        } else if (id == R.id.settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         }
@@ -243,14 +241,14 @@ public class GalleryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void openFragment(int fragmentID, Fragment fragment){
+    public void openFragment(int fragmentID, Fragment fragment) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         tx.replace(fragmentID, fragment);
         tx.addToBackStack(null);
         tx.commit();
     }
 
-    public void clearBackStackExclusive(){
+    public void clearBackStackExclusive() {
         getSupportFragmentManager().popBackStack("content_main", getSupportFragmentManager().POP_BACK_STACK_INCLUSIVE);
     }
 

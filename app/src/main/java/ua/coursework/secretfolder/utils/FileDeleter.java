@@ -3,34 +3,23 @@ package ua.coursework.secretfolder.utils;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.MediaStore;
-import android.util.Log;
 
 import com.snatik.storage.Storage;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FileDeleter {
 
     ContentResolver contentResolver;
     Storage storage;
 
-    public FileDeleter(Activity activity, Context context){
+    public FileDeleter(Activity activity, Context context) {
         contentResolver = context.getContentResolver();
         permissionsHandler.checkPermissions(activity, context);
         storage = new Storage(context);
     }
 
-    public void fDelete(final File file){
+    public void fDelete(final File file) {
 
         storage.deleteFile(file.getPath());
 

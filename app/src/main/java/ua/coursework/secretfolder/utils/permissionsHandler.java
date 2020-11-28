@@ -8,10 +8,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class permissionsHandler {
 
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        public static void checkPermissions(Activity activity, Context context) {
+    public static void checkPermissions(Activity activity, Context context) {
 
         if (!EasyPermissions.hasPermissions(context, REQUIRED_SDK_PERMISSIONS)) {
             EasyPermissions.requestPermissions(activity, "Access for storage",

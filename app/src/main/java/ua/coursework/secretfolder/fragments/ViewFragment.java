@@ -1,9 +1,7 @@
 package ua.coursework.secretfolder.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -28,39 +26,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.snatik.storage.Storage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.UserPrincipal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import ua.coursework.secretfolder.GalleryActivity;
 import ua.coursework.secretfolder.R;
 import ua.coursework.secretfolder.utils.CryptoHandler;
 import ua.coursework.secretfolder.utils.MyAdapter;
 import ua.coursework.secretfolder.utils.permissionsHandler;
-
-import ua.coursework.secretfolder.utils.FileDeleter;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -124,7 +106,7 @@ public class ViewFragment extends Fragment {
 
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.imagegallery);
         recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(),4);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 4);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new MyAdapter(activity, getContext());
         recyclerView.setAdapter(adapter);
@@ -169,13 +151,12 @@ public class ViewFragment extends Fragment {
         }
     }
 
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         loadImages();
     }
 
-    public Bitmap convert(String base64Str) throws IllegalArgumentException
-    {
+    public Bitmap convert(String base64Str) throws IllegalArgumentException {
         try {
             byte[] test = Base64.decode(base64Str, Base64.DEFAULT);
             String decodedBytes = (cryptoHandler.decrypt(getContext(), test));
@@ -183,15 +164,14 @@ public class ViewFragment extends Fragment {
             Bitmap decoded = BitmapFactory.decodeByteArray(base64Bytes, 0, base64Bytes.length);
 
             return decoded;
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("Decoder", e.toString());
 
             return null;
         }
     }
 
-    public String convert(Bitmap bitmap)
-    {
+    public String convert(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         String base64 = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
@@ -201,9 +181,9 @@ public class ViewFragment extends Fragment {
         return encryptedString;
     }
 
-    public void writeFileOnInternalStorage(String sFileName, String sBody){
+    public void writeFileOnInternalStorage(String sFileName, String sBody) {
         File dir = mApplicationDirectoryData;
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdir();
         }
 
@@ -213,7 +193,7 @@ public class ViewFragment extends Fragment {
             writer.append(sBody);
             writer.flush();
             writer.close();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -223,16 +203,16 @@ public class ViewFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void loadImages(){
+    private void loadImages() {
         Map<Bitmap, String> images = getImages();
         adapter.clearItems();
 
-        if(images != null){
+        if (images != null) {
             adapter.setItems(images);
         }
     }
 
-    private Map<Bitmap, String> getImages(){
+    private Map<Bitmap, String> getImages() {
 
         File[] files = mApplicationDirectoryData.listFiles();
         Map<Bitmap, String> images = new LinkedHashMap<Bitmap, String>();
@@ -250,15 +230,15 @@ public class ViewFragment extends Fragment {
                     e.printStackTrace();
                 }
                 Bitmap bitmap = convert(fileAsString);
-                if(bitmap != null){
+                if (bitmap != null) {
                     images.put(bitmap, temp);
                     Log.i("File: ", file.getAbsolutePath());
-                }else{
+                } else {
                     Log.w("File: ", file.getAbsolutePath() + " had bad base64");
                 }
 
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return null;
         }
 
@@ -266,8 +246,7 @@ public class ViewFragment extends Fragment {
     }
 
     static String readFile(String path, Charset encoding)
-            throws IOException
-    {
+            throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
@@ -277,7 +256,7 @@ public class ViewFragment extends Fragment {
         fabBtn.show();
     }
 
-    public ProgressBar getProgressBar(){
+    public ProgressBar getProgressBar() {
         return progressBar;
     }
 }

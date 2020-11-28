@@ -19,7 +19,7 @@ public class CryptoHandler {
     Cipher cipher;
     md5Calculator md5 = new md5Calculator();
 
-    public byte[] encrypt(Context context, String data){
+    public byte[] encrypt(Context context, String data) {
 
         // AES = симметричный алгоритм шафрования
         // CBC = режим алгоритма AES
@@ -53,7 +53,7 @@ public class CryptoHandler {
         return cipherText;
     }
 
-    public byte[] encrypt(Context context, byte[] data){
+    public byte[] encrypt(Context context, byte[] data) {
 
         // AES = симметричный алгоритм шафрования
         // CBC = режим алгоритма AES
@@ -86,7 +86,7 @@ public class CryptoHandler {
         return cipherText;
     }
 
-    public String decrypt(Context context, byte[] data){
+    public String decrypt(Context context, byte[] data) {
 
         // AES = симметричный алгоритм шафрования
         // CBC = режим алгоритма AES
@@ -118,7 +118,7 @@ public class CryptoHandler {
             e.printStackTrace();
         }
 
-        String test = new String(cipherText);;
+        String test = new String(cipherText);
 
         return test;
     }

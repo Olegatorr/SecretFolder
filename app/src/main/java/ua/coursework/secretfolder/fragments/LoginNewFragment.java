@@ -8,7 +8,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -43,10 +42,10 @@ public class LoginNewFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final EditText passField = (EditText)view.findViewById(R.id.passText);
-        final TextView errorText = (TextView)view.findViewById(R.id.textError);
-        final Button bLogin = (Button)view.findViewById(R.id.button_first);
-        final TextView textViewSetUp = (TextView)view.findViewById(R.id.textViewSetUp);
+        final EditText passField = (EditText) view.findViewById(R.id.passText);
+        final TextView errorText = (TextView) view.findViewById(R.id.textError);
+        final Button bLogin = (Button) view.findViewById(R.id.button_first);
+        final TextView textViewSetUp = (TextView) view.findViewById(R.id.textViewSetUp);
 
         mFingerprintIdentify = new FingerprintIdentify(getContext());
         mFingerprintIdentify.setSupportAndroidL(true);
@@ -64,8 +63,8 @@ public class LoginNewFragment extends Fragment {
         passField.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                    switch (i){
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (i) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             bLogin.callOnClick();
@@ -82,13 +81,13 @@ public class LoginNewFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if(!isFirstPINEntered){
+                if (!isFirstPINEntered) {
                     firstPIN = passField.getText().toString();
                     passField.getText().clear();
                     textViewSetUp.setText(R.string.confirm_pin);
                     isFirstPINEntered = true;
-                }else{
-                    if(passField.getText().toString().equals(firstPIN)){
+                } else {
+                    if (passField.getText().toString().equals(firstPIN)) {
                         Snackbar.make(view, R.string.pin_set_up, Snackbar.LENGTH_SHORT)
                                 .setAction(R.string.pin_set_up, null).show();
 
@@ -114,7 +113,7 @@ public class LoginNewFragment extends Fragment {
                         AlertDialog alert = builder.create();
                         alert.show();
 
-                    }else{
+                    } else {
                         errorText.setVisibility(View.VISIBLE);
                     }
                 }
@@ -122,12 +121,12 @@ public class LoginNewFragment extends Fragment {
         });
     }
 
-    private void waitForFingerprint(Boolean bool){
+    private void waitForFingerprint(Boolean bool) {
 
         AlertDialog.Builder alertDialogBuilder;
         AlertDialog alertDialog = null;
         final UIHelper UIhelper = new UIHelper(getView(), getContext());
-        if(bool){
+        if (bool) {
             alertDialogBuilder = new AlertDialog.Builder(getContext());
             alertDialogBuilder.setTitle(R.string.touch_sensor);
             alertDialogBuilder.setMessage(R.string.touch_the_sensor_to_be_able_to_use_fingerprints_to_login_into_the_SecretFolder).setCancelable(false);
@@ -172,12 +171,12 @@ public class LoginNewFragment extends Fragment {
                 }
             });
 
-        }else{
+        } else {
             alertDialog.dismiss();
         }
     }
 
-    private void onLoginSetSuccess(){
+    private void onLoginSetSuccess() {
         Intent intent = new Intent(getContext(), GalleryActivity.class);
         startActivity(intent);
         getActivity().finish();

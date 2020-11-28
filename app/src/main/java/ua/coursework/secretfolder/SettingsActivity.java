@@ -1,15 +1,11 @@
 package ua.coursework.secretfolder;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,9 +13,7 @@ import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -117,11 +111,10 @@ public class SettingsActivity extends AppCompatActivity {
         return true;
     }
 
-    public void addShortcutToHomeScreen(Context context, int number)
-    {
+    public void addShortcutToHomeScreen(Context context, int number) {
 
         int drawable;
-        switch (number){
+        switch (number) {
             case 1:
                 drawable = R.drawable.application;
                 break;
@@ -154,17 +147,14 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
         }
 
-        if (ShortcutManagerCompat.isRequestPinShortcutSupported(context))
-        {
+        if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
             ShortcutInfoCompat shortcutInfo = new ShortcutInfoCompat.Builder(context, "#1")
                     .setIntent(new Intent(context, LoginActivity.class).setAction(Intent.ACTION_MAIN)) // !!! intent's action must be set on oreo
                     .setShortLabel(textView.getText())
                     .setIcon(IconCompat.createWithResource(context, drawable))
                     .build();
             ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, null);
-        }
-        else
-        {
+        } else {
             Snackbar.make(findViewById(R.id.settings), R.string.shortcuts_not_supported, Snackbar.LENGTH_SHORT)
                     .setAction(R.string.shortcuts_not_supported, null).show();
         }

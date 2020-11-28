@@ -1,6 +1,5 @@
 package ua.coursework.secretfolder;
 
-import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -24,9 +23,9 @@ public class LoginActivity extends AppCompatActivity {
 
         PINCrypter.init(this);
 
-        if(isPINSaved()){
+        if (isPINSaved()) {
             openFragment(R.id.nav_host_fragment, new LoginFragment());
-        }else{
+        } else {
             openFragment(R.id.nav_host_fragment, new LoginNewFragment());
         }
 
@@ -34,20 +33,15 @@ public class LoginActivity extends AppCompatActivity {
 
     public boolean isPINSaved() {
         String pin = PINCrypter.getPin();
-        if ("".equals(pin)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !"".equals(pin);
     }
 
-    public void openFragment(int fragmentID, Fragment fragment){
+    public void openFragment(int fragmentID, Fragment fragment) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         tx.replace(fragmentID, fragment);
         tx.addToBackStack(null);
         tx.commit();
     }
-
 
 
 }

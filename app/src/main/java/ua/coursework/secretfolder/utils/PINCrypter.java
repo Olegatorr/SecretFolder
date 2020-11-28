@@ -1,14 +1,15 @@
 package ua.coursework.secretfolder.utils;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-
-import javax.crypto.Cipher;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.util.Objects;
+
+import javax.crypto.Cipher;
 
 import co.infinum.goldfinger.crypto.CipherCrypter;
 import co.infinum.goldfinger.crypto.CipherFactory;

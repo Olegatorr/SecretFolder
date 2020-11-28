@@ -1,10 +1,6 @@
 package ua.coursework.secretfolder;
 
 import android.annotation.SuppressLint;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,11 +10,11 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.snatik.storage.Storage;
 
 import java.io.IOException;
@@ -28,8 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import ua.coursework.secretfolder.utils.CryptoHandler;
-
-import static java.security.AccessController.getContext;
 
 public class FullscreenActivity extends AppCompatActivity {
 
@@ -129,7 +123,7 @@ public class FullscreenActivity extends AppCompatActivity {
             ImageView imageView = findViewById(R.id.fullscreen_content);
             imageView.setImageBitmap(bitmap);
 
-        }catch (NullPointerException | IOException e){
+        } catch (NullPointerException | IOException e) {
             Log.e("Image", "NPE L103");
         }
 
@@ -176,8 +170,7 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public Bitmap convert(String base64Str) throws IllegalArgumentException
-    {
+    public Bitmap convert(String base64Str) throws IllegalArgumentException {
         byte[] test = Base64.decode(base64Str, Base64.DEFAULT);
 
         String decodedBytes = (cryptoHandler.decrypt(getApplicationContext(), test));
@@ -188,8 +181,7 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     static String readFile(String path, Charset encoding)
-            throws IOException
-    {
+            throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
