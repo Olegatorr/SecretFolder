@@ -45,17 +45,15 @@ public class GalleryActivity extends AppCompatActivity {
     AppCompatActivity activity;
     File mApplicationDirectory;
     File mApplicationDirectoryData;
-    ProgressBar progressBar;
     ProgressBarHelper progressBarHelper;
-    UIHelper snackbar;
     FirebaseUser user;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
+    private Menu menu;
 
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -79,6 +77,8 @@ public class GalleryActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -87,12 +87,6 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
-        /*
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        startActivity(intent);
-        this.finish();
-         */
     }
 
     @Override
@@ -103,7 +97,40 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    restrictMenu();
+                }else{
+                    unRestrictMenu();
+                }
+            }
+        });
+
+        this.menu = menu;
         return true;
+    }
+
+    private void restrictMenu() {
+        try {
+            menu.getItem(1).setEnabled(false);
+            menu.getItem(2).setEnabled(false);
+            menu.getItem(5).setEnabled(false);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void unRestrictMenu(){
+        try {
+            menu.getItem(1).setEnabled(true);
+            menu.getItem(2).setEnabled(true);
+            menu.getItem(5).setEnabled(true);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     @Override

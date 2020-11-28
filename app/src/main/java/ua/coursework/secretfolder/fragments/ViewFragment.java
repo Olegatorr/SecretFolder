@@ -105,6 +105,11 @@ public class ViewFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.progressBarUD);
 
+        File folder = new File(mApplicationDirectoryData.getPath());
+        if (!folder.exists()){
+            folder.mkdir();
+        }
+
         return view;
     }
 
