@@ -143,7 +143,6 @@ public class FullscreenActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        goBackToGallery();
     }
 
     private void goBackToGallery(){
