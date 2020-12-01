@@ -103,10 +103,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ImgViewHolder> {
                 @Override
                 public void onClick(View v) {
 
-                    // TODO : send bm
                     Intent intent = new Intent(context, FullscreenActivity.class);
                     intent.putExtra("ImageURI", mapList.get(bitmap));
                     startActivity(context, intent, null);
+                    activity.finish();
                 }
             });
 

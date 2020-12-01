@@ -1,6 +1,7 @@
 package ua.coursework.secretfolder;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import ua.coursework.secretfolder.utils.CryptoHandler;
+import static androidx.core.content.ContextCompat.startActivity;
+
 
 public class FullscreenActivity extends AppCompatActivity {
 
@@ -130,6 +133,27 @@ public class FullscreenActivity extends AppCompatActivity {
             Log.e("Image", "NPE L103");
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        goBackToGallery();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        goBackToGallery();
+    }
+
+    private void goBackToGallery(){
+        Context context = getApplicationContext();
+
+        Intent intent = new Intent(context, GalleryActivity.class);
+        intent.putExtra("fromFullScreen", true);
+        androidx.core.content.ContextCompat.startActivity(context, intent, null);
+
+        this.finish();
     }
 
     @Override

@@ -82,23 +82,11 @@ public class ViewFragment extends Fragment {
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
         View view = inflater.inflate(R.layout.fragment_view, container, false);
-        FloatingActionButton fab = getActivity().findViewById(R.id.fabAdd);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent i = new Intent(
-                        Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, 69);
-
-            }
-        });
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
 
-        fabBtn = fab;
         mApplicationDirectory = getContext().getExternalFilesDir(null);
         mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
         cryptoHandler = new CryptoHandler();
@@ -129,7 +117,6 @@ public class ViewFragment extends Fragment {
         permissionsHandler.checkPermissions(getActivity(), getContext());
 
         loadImages();
-        showFab();
 
         hideKeyboardFrom(getContext(), view);
     }
@@ -253,10 +240,6 @@ public class ViewFragment extends Fragment {
         }
 
         return images;
-    }
-
-    public void showFab() {
-        fabBtn.show();
     }
 
     public ProgressBar getProgressBar() {

@@ -1,11 +1,18 @@
 package ua.coursework.secretfolder;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -21,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
@@ -29,20 +37,24 @@ import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import ua.coursework.secretfolder.fragments.ViewFragment;
+import ua.coursework.secretfolder.utils.CryptoHandler;
 import ua.coursework.secretfolder.utils.PreferencesHandler;
 import ua.coursework.secretfolder.utils.ProgressBarHelper;
-import ua.coursework.secretfolder.utils.UIHelper;
 import ua.coursework.secretfolder.utils.permissionsHandler;
 
 public class GalleryActivity extends AppCompatActivity {
 
     AppCompatActivity activity;
+    Context context;
     File mApplicationDirectory;
     File mApplicationDirectoryData;
     ProgressBarHelper progressBarHelper;
@@ -50,6 +62,15 @@ public class GalleryActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
     private Menu menu;
+    FloatingActionButton fabBtn;
+
+    CryptoHandler cryptoHandler;
+
+    String filename = null;
+    String picturePath = null;
+
+    boolean isFirstGalleryOpen = true;
+    boolean werePermissionsGranted = true;
 
     @Override
     public void onStart() {
@@ -60,16 +81,25 @@ public class GalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = getApplicationContext();
+
+        cryptoHandler = new CryptoHandler();
+
+
         setContentView(R.layout.activity_main);
         openFragment(R.id.nav_host_fragment, new ViewFragment());
 
         clearBackStackExclusive();
 
-        permissionsHandler.checkPermissions(this, getApplicationContext());
+        if (!permissionsHandler.checkPermissions(this, context)){
+            werePermissionsGranted = false;
+        } else {
+            werePermissionsGranted = true;
+        }
 
         activity = this;
 
-        mApplicationDirectory = getApplicationContext().getExternalFilesDir(null);
+        mApplicationDirectory = context.getExternalFilesDir(null);
         mApplicationDirectoryData = new File(mApplicationDirectory + "/data");
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -82,11 +112,54 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (fabBtn == null){
+            FloatingActionButton fab = activity.findViewById(R.id.fabAdd);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(i, 699);
+                    isFirstGalleryOpen = true;
+
+                }
+            });
+            fabBtn = fab;
+        }
+        fabBtn.show();
+
+        if (!werePermissionsGranted){
+            werePermissionsGranted = true;
+        } else {
+
+
+            if (isFirstGalleryOpen) {
+                isFirstGalleryOpen = false;
+            } else {
+                if (permissionsHandler.checkPermissions(this, context)) {
+                    werePermissionsGranted = true;
+                    lockApp();
+                } else {
+                    isFirstGalleryOpen = true;
+                }
+            }
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    private void lockApp() {
+
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        androidx.core.content.ContextCompat.startActivity(context, intent, null);
+        this.finish();
+
     }
 
     @Override
@@ -303,6 +376,50 @@ public class GalleryActivity extends AppCompatActivity {
             } else {
                 Log.e("Firebase", "Login Failed: " + response.getErrorCode());
             }
+        }else if(requestCode == 699){
+            if (resultCode == RESULT_OK && null != data) {
+
+                final Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+                picturePath = cursor.getString(columnIndex);
+                filename = picturePath.substring(picturePath.lastIndexOf("/") + 1);
+
+                cursor.close();
+
+                Bitmap bMap = null;
+                try {
+                    InputStream in = getContentResolver().openInputStream(selectedImage);
+                    bMap = BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage));
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                writeFileOnInternalStorage(filename, convert(bMap));
+
+            }
+        }
+    }
+
+    public void writeFileOnInternalStorage(String sFileName, String sBody) {
+        File dir = mApplicationDirectoryData;
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        try {
+            File gpxFile = new File(dir, sFileName);
+            FileWriter writer = new FileWriter(gpxFile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -326,5 +443,16 @@ public class GalleryActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    public String convert(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        String base64 = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+        byte[] encrypted = cryptoHandler.encrypt(context, base64);
+        String encryptedString = Base64.encodeToString(encrypted, Base64.DEFAULT);
+
+        return encryptedString;
+    }
+
 
 }

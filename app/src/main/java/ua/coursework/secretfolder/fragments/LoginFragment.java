@@ -61,7 +61,6 @@ public class LoginFragment extends Fragment {
         mFingerprintIdentify.init();
         if (!mFingerprintIdentify.isFingerprintEnable()) {
             Log.w("FINGERPRINT", "Fingerprints are not available");
-            return;
         }
 
         passField.setOnKeyListener(new View.OnKeyListener() {
