@@ -224,12 +224,14 @@ public class GalleryActivity extends AppCompatActivity {
                     new AuthUI.IdpConfig.Builder(AuthUI.PHONE_VERIFICATION_PROVIDER).build(),
                     new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build());
 
+            isFirstGalleryOpen = true;
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setAvailableProviders(providers)
                             .build(),
                     69);
+            isFirstGalleryOpen = true;
 
             return true;
 

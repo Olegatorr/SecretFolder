@@ -20,6 +20,27 @@ public class SettingsActivity extends AppCompatActivity {
     TextView textView;
 
     @Override
+    public void onBackPressed() {
+        goBackToGallery();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private void goBackToGallery(){
+        Context context = getApplicationContext();
+
+        Intent intent = new Intent(context, GalleryActivity.class);
+        intent.putExtra("fromFullScreen", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        androidx.core.content.ContextCompat.startActivity(context, intent, null);
+
+        this.finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
