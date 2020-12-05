@@ -153,6 +153,7 @@ public class ViewFragment extends Fragment {
         }
     }
 
+
     public void onResume() {
         super.onResume();
         loadImages();

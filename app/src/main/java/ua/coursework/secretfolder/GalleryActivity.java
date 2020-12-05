@@ -85,7 +85,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         cryptoHandler = new CryptoHandler();
 
-
         setContentView(R.layout.activity_main);
         openFragment(R.id.nav_host_fragment, new ViewFragment());
 

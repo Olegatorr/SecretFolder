@@ -23,8 +23,8 @@
     <string name="settings">Налаштування</string>
     <string name="set_up_an_icon">Встановити іконку</string>
     <string name="shortcuts_not_supported">Скріншот не підтримується</string>
-    <string name="local">Локальний</string>
-    <string name="server">Local&amp;ServerU</string>
+    <string name="local">Локально</string>
+    <string name="server">Локально&amp;Сервер</string>
     <string name="where_delete">Звідки ви хочете видалити?</string>
     <string name="do_you_want_to_use_fingerprint_to_login">Хочете використовувати відбиток пальця для логіну?</string>
     <string name="no">Ні</string>
